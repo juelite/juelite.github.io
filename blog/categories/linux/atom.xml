@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[不是所有的牛奶都叫特仑苏]]></title>
-  <link href="http://wy.orzdress.com/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Linux | 不是所有的牛奶都叫特仑苏]]></title>
+  <link href="http://wy.orzdress.com/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://wy.orzdress.com/"/>
   <updated>2017-08-10T17:07:27+08:00</updated>
   <id>http://wy.orzdress.com/</id>
