@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Linux | 陌上花开 可缓缓归矣]]></title>
-  <link href="http://wy.orzdress.com/blog/categories/linux/atom.xml" rel="self"/>
-  <link href="http://wy.orzdress.com/"/>
-  <updated>2017-08-10T17:45:00+08:00</updated>
-  <id>http://wy.orzdress.com/</id>
+  <link href="http://juelite.github.io/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://juelite.github.io/"/>
+  <updated>2017-08-10T17:48:08+08:00</updated>
+  <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Shell History 命令扩展]]></title>
-    <link href="http://wy.orzdress.com/blog/2017/08/10/shell-history/"/>
+    <link href="http://juelite.github.io/blog/2017/08/10/shell-history/"/>
     <updated>2017-08-10T11:35:36+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2017/08/10/shell-history</id>
+    <id>http://juelite.github.io/blog/2017/08/10/shell-history</id>
     <content type="html"><![CDATA[<p><img src="/images/shell_history.png" title="shell history 命令扩展" alt="shell history 命令扩展" /></p>
 
 <ol>
@@ -35,9 +35,9 @@
   
   <entry>
     <title type="html"><![CDATA[Ffmpeg使用]]></title>
-    <link href="http://wy.orzdress.com/blog/2017/05/07/windows-xia-ffmpegshi-yong/"/>
+    <link href="http://juelite.github.io/blog/2017/05/07/windows-xia-ffmpegshi-yong/"/>
     <updated>2017-05-07T18:14:09+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2017/05/07/windows-xia-ffmpegshi-yong</id>
+    <id>http://juelite.github.io/blog/2017/05/07/windows-xia-ffmpegshi-yong</id>
     <content type="html"><![CDATA[<p>列出设备</p>
 
 <pre><code>/usr/local/bin/ffmpeg -list_devices true -f dshow -i dummy  
@@ -456,9 +456,9 @@ return $data;
   
   <entry>
     <title type="html"><![CDATA[Htop是个好东西]]></title>
-    <link href="http://wy.orzdress.com/blog/2015/01/06/htop/"/>
+    <link href="http://juelite.github.io/blog/2015/01/06/htop/"/>
     <updated>2015-01-06T13:49:16+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2015/01/06/htop</id>
+    <id>http://juelite.github.io/blog/2015/01/06/htop</id>
     <content type="html"><![CDATA[<pre><code>Htop是一款运行于Linux系统监控与进程管理软件，用于取代Unix下传统的top。与top只提供最消耗资源的进程列表不同，htop提供所有进程的列表，并且使用彩色标识出处理器、swap和内存状态。
 </code></pre>
 
@@ -484,9 +484,9 @@ make &amp;&amp; make install
   
   <entry>
     <title type="html"><![CDATA[Linux-有用的命令]]></title>
-    <link href="http://wy.orzdress.com/blog/2014/08/31/linux-useful-command/"/>
+    <link href="http://juelite.github.io/blog/2014/08/31/linux-useful-command/"/>
     <updated>2014-08-31T18:57:18+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2014/08/31/linux-useful-command</id>
+    <id>http://juelite.github.io/blog/2014/08/31/linux-useful-command</id>
     <content type="html"><![CDATA[<p>下面我将和大家分享一些学习Linux命令行的技巧，希望能对大家有所助益。如果在本文中遇到不太熟悉的命令，可以在终端中键入以下命令寻求帮助。
 Man <command>
  Linux入门必备
@@ -561,9 +561,9 @@ awk &lsquo;{ x += $2 } END { print x }&rsquo;
   
   <entry>
     <title type="html"><![CDATA[Linux命令行技巧]]></title>
-    <link href="http://wy.orzdress.com/blog/2012/03/23/command-line-skill-of-linux/"/>
+    <link href="http://juelite.github.io/blog/2012/03/23/command-line-skill-of-linux/"/>
     <updated>2012-03-23T13:18:37+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2012/03/23/command-line-skill-of-linux</id>
+    <id>http://juelite.github.io/blog/2012/03/23/command-line-skill-of-linux</id>
     <content type="html"><![CDATA[<h2>编辑命令</h2>
 
 <pre><code>* Ctrl + a ：移到命令行首

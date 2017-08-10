@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Html | 陌上花开 可缓缓归矣]]></title>
-  <link href="http://wy.orzdress.com/blog/categories/html/atom.xml" rel="self"/>
-  <link href="http://wy.orzdress.com/"/>
-  <updated>2017-08-10T17:45:00+08:00</updated>
-  <id>http://wy.orzdress.com/</id>
+  <link href="http://juelite.github.io/blog/categories/html/atom.xml" rel="self"/>
+  <link href="http://juelite.github.io/"/>
+  <updated>2017-08-10T17:48:08+08:00</updated>
+  <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[html-DocType]]></title>
-    <link href="http://wy.orzdress.com/blog/2014/08/31/html-doctype/"/>
+    <link href="http://juelite.github.io/blog/2014/08/31/html-doctype/"/>
     <updated>2014-08-31T19:29:52+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2014/08/31/html-doctype</id>
+    <id>http://juelite.github.io/blog/2014/08/31/html-doctype</id>
     <content type="html"><![CDATA[<p>&lt;!doctype html></p>
 
 <ol>

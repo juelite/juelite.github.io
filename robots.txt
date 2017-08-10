@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://wy.orzdress.com/sitemap.xml 
+Sitemap: http://juelite.github.io/sitemap.xml 

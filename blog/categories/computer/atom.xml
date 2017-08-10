@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Computer | 陌上花开 可缓缓归矣]]></title>
-  <link href="http://wy.orzdress.com/blog/categories/computer/atom.xml" rel="self"/>
-  <link href="http://wy.orzdress.com/"/>
-  <updated>2017-08-10T17:45:00+08:00</updated>
-  <id>http://wy.orzdress.com/</id>
+  <link href="http://juelite.github.io/blog/categories/computer/atom.xml" rel="self"/>
+  <link href="http://juelite.github.io/"/>
+  <updated>2017-08-10T17:48:08+08:00</updated>
+  <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Htop是个好东西]]></title>
-    <link href="http://wy.orzdress.com/blog/2015/01/06/htop/"/>
+    <link href="http://juelite.github.io/blog/2015/01/06/htop/"/>
     <updated>2015-01-06T13:49:16+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2015/01/06/htop</id>
+    <id>http://juelite.github.io/blog/2015/01/06/htop</id>
     <content type="html"><![CDATA[<pre><code>Htop是一款运行于Linux系统监控与进程管理软件，用于取代Unix下传统的top。与top只提供最消耗资源的进程列表不同，htop提供所有进程的列表，并且使用彩色标识出处理器、swap和内存状态。
 </code></pre>
 
@@ -43,9 +43,9 @@ make &amp;&amp; make install
   
   <entry>
     <title type="html"><![CDATA[一致性哈希算法浅析]]></title>
-    <link href="http://wy.orzdress.com/blog/2014/01/31/consistent-hashing/"/>
+    <link href="http://juelite.github.io/blog/2014/01/31/consistent-hashing/"/>
     <updated>2014-01-31T10:27:40+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2014/01/31/consistent-hashing</id>
+    <id>http://juelite.github.io/blog/2014/01/31/consistent-hashing</id>
     <content type="html"><![CDATA[<p>在做服务器负载均衡时候可供选择的负载均衡的算法有很多，包括：</p>
 
 <ul>
@@ -102,9 +102,9 @@ make &amp;&amp; make install
   
   <entry>
     <title type="html"><![CDATA[理解Mysql字符集设置]]></title>
-    <link href="http://wy.orzdress.com/blog/2012/01/17/understand-mysql-charset/"/>
+    <link href="http://juelite.github.io/blog/2012/01/17/understand-mysql-charset/"/>
     <updated>2012-01-17T10:39:27+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2012/01/17/understand-mysql-charset</id>
+    <id>http://juelite.github.io/blog/2012/01/17/understand-mysql-charset</id>
     <content type="html"><![CDATA[<h3>基本概念</h3>
 
 <ul>

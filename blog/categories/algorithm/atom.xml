@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Algorithm | 陌上花开 可缓缓归矣]]></title>
-  <link href="http://wy.orzdress.com/blog/categories/algorithm/atom.xml" rel="self"/>
-  <link href="http://wy.orzdress.com/"/>
-  <updated>2017-08-10T17:45:00+08:00</updated>
-  <id>http://wy.orzdress.com/</id>
+  <link href="http://juelite.github.io/blog/categories/algorithm/atom.xml" rel="self"/>
+  <link href="http://juelite.github.io/"/>
+  <updated>2017-08-10T17:48:08+08:00</updated>
+  <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[一致性哈希算法浅析]]></title>
-    <link href="http://wy.orzdress.com/blog/2014/01/31/consistent-hashing/"/>
+    <link href="http://juelite.github.io/blog/2014/01/31/consistent-hashing/"/>
     <updated>2014-01-31T10:27:40+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2014/01/31/consistent-hashing</id>
+    <id>http://juelite.github.io/blog/2014/01/31/consistent-hashing</id>
     <content type="html"><![CDATA[<p>在做服务器负载均衡时候可供选择的负载均衡的算法有很多，包括：</p>
 
 <ul>
@@ -74,9 +74,9 @@
   
   <entry>
     <title type="html"><![CDATA[RSA加密算法简单介绍]]></title>
-    <link href="http://wy.orzdress.com/blog/2012/05/30/intr-rsa/"/>
+    <link href="http://juelite.github.io/blog/2012/05/30/intr-rsa/"/>
     <updated>2012-05-30T20:40:02+08:00</updated>
-    <id>http://wy.orzdress.com/blog/2012/05/30/intr-rsa</id>
+    <id>http://juelite.github.io/blog/2012/05/30/intr-rsa</id>
     <content type="html"><![CDATA[<p>这种算法1978年就出现了，它是第一个既能用于数据加密也能用于数字签名的算法。它易于理解和操作，也很流行。
    算法的名字以发明者的名字命名：Ron Rivest, AdiShamir 和Leonard Adleman。
    　　RSA算法是一种非对称密码算法，所谓非对称，就是指该算法需要一对密钥，使用其中一个加密，则需要用另一个
