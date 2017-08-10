@@ -4,7 +4,7 @@
   <title><![CDATA[不是所有的牛奶都叫特仑苏]]></title>
   <link href="http://wy.orzdress.com/atom.xml" rel="self"/>
   <link href="http://wy.orzdress.com/"/>
-  <updated>2017-08-10T17:11:06+08:00</updated>
+  <updated>2017-08-10T17:12:11+08:00</updated>
   <id>http://wy.orzdress.com/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -18,9 +18,9 @@
     <link href="http://wy.orzdress.com/blog/2017/08/10/hello-juelite/"/>
     <updated>2017-08-10T16:55:30+08:00</updated>
     <id>http://wy.orzdress.com/blog/2017/08/10/hello-juelite</id>
-    <content type="html"><![CDATA[<pre><code>![shell history 命令扩展](/images/shell_history.png "shell history 命令扩展")
+    <content type="html"><![CDATA[<p><img src="http://wy.orzdress.com/images/shell_history.png" title="shell history 命令扩展" alt="shell history 命令扩展" /></p>
 
-   !^ 获取上一条命令的第一个参数。
+<pre><code>   !^ 获取上一条命令的第一个参数。
 
    !$ 获取上一条命令的最后一个参数。
 
