@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ffmpeg | 陌上花开 可缓缓归矣]]></title>
   <link href="http://wy.orzdress.com/blog/categories/ffmpeg/atom.xml" rel="self"/>
   <link href="http://wy.orzdress.com/"/>
-  <updated>2017-08-10T17:19:41+08:00</updated>
+  <updated>2017-08-10T17:45:00+08:00</updated>
   <id>http://wy.orzdress.com/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -14,33 +14,73 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Windows 下ffmpeg使用]]></title>
+    <title type="html"><![CDATA[Ffmpeg使用]]></title>
     <link href="http://wy.orzdress.com/blog/2017/05/07/windows-xia-ffmpegshi-yong/"/>
     <updated>2017-05-07T18:14:09+08:00</updated>
     <id>http://wy.orzdress.com/blog/2017/05/07/windows-xia-ffmpegshi-yong</id>
     <content type="html"><![CDATA[<p>列出设备</p>
 
-<pre><code>1. ffmpeg -list_devices true -f dshow -i dummy  
+<pre><code>/usr/local/bin/ffmpeg -list_devices true -f dshow -i dummy  
 </code></pre>
 
 <p>保存文件</p>
 
-<pre><code>1. ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 mycamera.mkv  
+<pre><code>/usr/local/bin/ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 mycamera.mkv  
 </code></pre>
 
 <p>直接播放</p>
 
-<pre><code>1. ffplay -f dshow -i video="Integrated Camera"  
+<pre><code>/usr/local/bin/ffplay -f dshow -i video="Integrated Camera"  
 </code></pre>
 
 <p>推流</p>
 
-<pre><code>1. ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://192.168.1.5/mytv/test1
+<pre><code>/usr/local/bin/ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://192.168.1.5/mytv/test1
 </code></pre>
 
 <p>录制屏幕</p>
 
-<pre><code>1. ffmpeg -f -dshow -s 1600x900 -r 50 -vcodec libx264 –preset:v ultrafast –tune:v zerolatency -crf 18 -f mpegts rtmp://192.168.1.5/mytv/test2      在Windows平台下，使用-dshow取代x11grab
+<pre><code>/usr/local/bin/ffmpeg -f x11grab -s 1600x900 -r 50 -vcodec libx264 –preset:v ultrafast –tune:v zerolatency -crf 18 -f mpegts rtmp://192.168.1.5/mytv/test2      在Windows平台下，使用-dshow取代x11grab
+</code></pre>
+
+<p>抽帧存图</p>
+
+<p>/usr/local/bin/ffmpeg -i aa.mp4 -vframes 128 -r 1 -q:v 2 -f image2 -ss 90 ~/Downloads/image-1.jpeg;</p>
+
+<p>PHP结合ffmpeg获取视频/音频文件信息</p>
+
+<pre><code>$command = sprintf(FFMPEG_PATH, $file);
+
+ob_start();
+passthru($command);
+$info = ob_get_contents();
+ob_end_clean();
+
+$data = array();
+if (preg_match("/Duration: (.*?), start: (.*?), bitrate: (\d*) kb\/s/", $info, $match)) {
+    $data['duration'] = $match[1]; //播放时间
+    $arr_duration = explode(':', $match[1]);
+    $data['seconds'] = $arr_duration[0] * 3600 + $arr_duration[1] * 60 + $arr_duration[2]; //转换播放时间为秒数
+    $data['start'] = $match[2]; //开始时间
+    $data['bitrate'] = $match[3]; //码率(kb)
+}
+if (preg_match("/Video: (.*?), (.*?), (.*?)[,\s]/", $info, $match)) {
+    $data['vcodec'] = $match[1]; //视频编码格式
+    $data['vformat'] = $match[2]; //视频格式
+    $data['resolution'] = $match[3]; //视频分辨率
+    $arr_resolution = explode('x', $match[3]);
+    $data['width'] = $arr_resolution[0];
+    $data['height'] = $arr_resolution[1];
+}
+if (preg_match("/Audio: (\w*), (\d*) Hz/", $info, $match)) {
+    $data['acodec'] = $match[1]; //音频编码
+    $data['asamplerate'] = $match[2]; //音频采样频率
+}
+if (isset($data['seconds']) &amp;&amp; isset($data['start'])) {
+    $data['play_time'] = $data['seconds'] + $data['start']; //实际播放时间
+}
+$data['size'] = filesize($file); //文件大小
+return $data;
 </code></pre>
 
 <p>-i 指定输入的文件
@@ -49,16 +89,16 @@
 
 <p>最简单的抓屏：</p>
 
-<pre><code>ffmpeg -f gdigrab -i desktop out.mpg
+<pre><code>/usr/local/bin/ffmpeg -f gdigrab -i desktop out.mpg
 </code></pre>
 
 <p>从屏幕的（10,20）点处开始，抓取640x480的屏幕，设定帧率为5</p>
 
-<pre><code>ffmpeg -f gdigrab -framerate 5 -offset_x 10 -offset_y 20 -video_size 640x480 -i desktop out.mpg
+<pre><code>/usr/local/bin/ffmpeg -f gdigrab -framerate 5 -offset_x 10 -offset_y 20 -video_size 640x480 -i desktop out.mpg
 </code></pre>
 
 <p>//=======================================================================
-    ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
+    /usr/local/bin/ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
     对上面的命令稍做个解释。
     -ss 开始时间，如： 00:00:20，表示从20秒开始；
     -t 时长，如： 00:00:10，表示截取10秒长的视频；
@@ -68,10 +108,10 @@
     OUTPUT，输出视频文件；
 //=======================================================================</p>
 
-<pre><code>ffmpeg -f x11grab -s xga -r 10 -i :0.0+0+0 wheer.avi
+<pre><code>/usr/local/bin/ffmpeg -f x11grab -s xga -r 10 -i :0.0+0+0 wheer.avi
 -i video="screen-capture-recorder"
 
-ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectShow audio devices" -pix_fmt yuv420p -vcodec libx264 -acodec libvo_aacenc -s 1280x720 -r 25 -q 10 -ar 44100 -ac 2 -tune zerolatency -preset ultrafast -f mpegts - | ffmpeg -f mpegts -i - -c copy -bsf:a aac_adtstoasc -f flv temp.flv
+/usr/local/bin/ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectShow audio devices" -pix_fmt yuv420p -vcodec libx264 -acodec libvo_aacenc -s 1280x720 -r 25 -q 10 -ar 44100 -ac 2 -tune zerolatency -preset ultrafast -f mpegts - | ffmpeg -f mpegts -i - -c copy -bsf:a aac_adtstoasc -f flv temp.flv
 </code></pre>
 
 <p>-r选项设置每秒提取图片的帧数。
@@ -79,27 +119,27 @@ ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectSho
 
 <p>截取一张352x240尺寸大小的，格式为jpg的图片</p>
 
-<pre><code>ffmpeg -i 1.mp4 -y -f image2 -t 120.001 -s 352x240 a.jpg
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -y -f image2 -t 120.001 -s 352x240 a.jpg
 </code></pre>
 
 <p>把视频的前30帧转换成一个Animated Gif ：</p>
 
-<pre><code>ffmpeg -i 1.mp4 -vframes 30 -y -f gif a.gif
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -vframes 30 -y -f gif a.gif
 </code></pre>
 
 <p>生成缩略图</p>
 
-<pre><code>ffmpeg -i 1.mp4 -y -f image2 -ss 08.010 -t 0.001 -s 352x240 b.jpg
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -y -f image2 -ss 08.010 -t 0.001 -s 352x240 b.jpg
 </code></pre>
 
 <p>列出本机设备</p>
 
-<pre><code>ffmpeg -list_devices true -f dshow -i dummy
+<pre><code>/usr/local/bin/ffmpeg -list_devices true -f dshow -i dummy
 </code></pre>
 
 <p>从视频中生成gif图片</p>
 
-<pre><code>ffmpeg -i 1.mp4 -ss 10 -t 10   -s 480x360  tutu.gif
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -ss 10 -t 10   -s 480x360  tutu.gif
 </code></pre>
 
 <h2>-ss 指从 10s 开始转码,-t 指转换 10s 的视频 -s 指定尺寸</h2>
@@ -113,45 +153,45 @@ ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectSho
 
 <p>1.分离视频音频流</p>
 
-<pre><code>ffmpeg -i input_file -vcodec copy -an output_file_video　　//分离视频流ffmpeg -i input_file -acodec copy -vn output_file_audio　　//分离音频流
+<pre><code>/usr/local/bin/ffmpeg -i input_file -vcodec copy -an output_file_video　　//分离视频流ffmpeg -i input_file -acodec copy -vn output_file_audio　　//分离音频流
 </code></pre>
 
 <p>2.视频解复用</p>
 
-<pre><code>ffmpeg –i test.mp4 –vcodec copy –an –f m4v test.264
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec copy –an –f m4v test.264
 
-ffmpeg –i test.avi –vcodec copy –an –f m4v test.264
+/usr/local/bin/ffmpeg –i test.avi –vcodec copy –an –f m4v test.264
 </code></pre>
 
 <p>3.视频转码</p>
 
-<pre><code>ffmpeg –i test.mp4 –vcodec h264 –s 352*278 –an –f m4v test.264
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec h264 –s 352*278 –an –f m4v test.264
 </code></pre>
 
 <p>//转码为码流原始文件</p>
 
-<pre><code>ffmpeg –i test.mp4 –vcodec h264 –bf 0 –g 25 –s 352*278 –an –f m4v test.264 //转码为码流原始文件
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec h264 –bf 0 –g 25 –s 352*278 –an –f m4v test.264 //转码为码流原始文件
 
-ffmpeg –i test.avi -vcodec mpeg4 –vtag xvid –qsame test_xvid.avi //转码为封装文件
+/usr/local/bin/ffmpeg –i test.avi -vcodec mpeg4 –vtag xvid –qsame test_xvid.avi //转码为封装文件
 </code></pre>
 
 <p>说明：-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制</p>
 
 <p>4.视频封装</p>
 
-<pre><code>ffmpeg –i video_file –i audio_file –vcodec copy –acodec copy output_file
+<pre><code>/usr/local/bin/ffmpeg –i video_file –i audio_file –vcodec copy –acodec copy output_file
 </code></pre>
 
 <p>5.视频剪切</p>
 
-<pre><code>ffmpeg –i test.avi –r 1 –f image2 image-%3d.jpeg //提取图片
+<pre><code>/usr/local/bin/ffmpeg –i test.avi –r 1 –f image2 image-%3d.jpeg //提取图片
 
-ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //剪切视频//-r 提取图像的频率，-ss 开始时间，-t 持续时间
+/usr/local/bin/ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //剪切视频//-r 提取图像的频率，-ss 开始时间，-t 持续时间
 </code></pre>
 
 <p>6.视频录制</p>
 
-<pre><code>ffmpeg –i rtsp://192.168.3.205:5555/test –vcodec copy out.avi
+<pre><code>/usr/local/bin/ffmpeg –i rtsp://192.168.3.205:5555/test –vcodec copy out.avi
 </code></pre>
 
 <p>7、利用ffmpeg视频切片</p>
@@ -160,7 +200,7 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 
 <p>命令如下：</p>
 
-<pre><code>ffmpeg -i 视频源地址 -strict -2 -c:v libx264 -c:a aac -f hls m3u8文件输出地址
+<pre><code>/usr/local/bin/ffmpeg -i 视频源地址 -strict -2 -c:v libx264 -c:a aac -f hls m3u8文件输出地址
 </code></pre>
 
 <p>8、ffmpeg缩放视频</p>
@@ -178,7 +218,7 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 <ol>
 <li><p>转视频格式</p>
 
-<p>ffmpeng -i source.mp4 -c:v libx264 -crf 24 destination.flv</p></li>
+<p>/usr/local/bin/ffmpeg -i source.mp4 -c:v libx264 -crf 24 destination.flv</p></li>
 </ol>
 
 
@@ -192,22 +232,22 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 
 <p>1.ffmpeg 把文件当做直播推送至服务器 (RTMP + FLV)</p>
 
-<pre><code>ffmpeg - re -i demo.mp4 -c copy - f flv rtmp://w.gslb.letv/live/streamid
+<pre><code>/usr/local/bin/ffmpeg - re -i demo.mp4 -c copy - f flv rtmp://w.gslb.letv/live/streamid
 </code></pre>
 
 <p>2.将直播的媒体保存到本地</p>
 
-<pre><code>ffmpeg -i rtmp://r.glsb.letv/live/streamid -c copy streamfile.flv
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://r.glsb.letv/live/streamid -c copy streamfile.flv
 </code></pre>
 
 <p>3.将一个直播流，视频改用h264压缩，音频改用faac压缩，送至另一个直播服务器</p>
 
-<pre><code>ffmpeg -i rtmp://r.glsb.letv/live/streamidA -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://w.glsb.letv/live/streamb
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://r.glsb.letv/live/streamidA -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://w.glsb.letv/live/streamb
 </code></pre>
 
 <p>4.提取视频中的音频,并保存为mp3 然后输出</p>
 
-<pre><code>ffmpeg -i input.avi -b:a 128k output.mp3
+<pre><code>/usr/local/bin/ffmpeg -i input.avi -b:a 128k output.mp3
 </code></pre>
 
 <ol>
@@ -221,19 +261,19 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 
 <p>1.获取视频的信息</p>
 
-<pre><code>ffmpeg -i video.avi
+<pre><code>/usr/local/bin/ffmpeg -i video.avi
 </code></pre>
 
 <p>2.将图片序列合成视频</p>
 
-<pre><code>ffmpeg -f image2 -i image%d.jpg video.mpg
+<pre><code>/usr/local/bin/ffmpeg -f image2 -i image%d.jpg video.mpg
 </code></pre>
 
 <p>上面的命令会把当前目录下的图片（名字如：image1.jpg. image2.jpg. 等&hellip;）合并成video.mpg</p>
 
 <p>3.将视频分解成图片序列</p>
 
-<pre><code>ffmpeg -i video.mpg image%d.jpg
+<pre><code>/usr/local/bin/ffmpeg -i video.mpg image%d.jpg
 </code></pre>
 
 <p>上面的命令会生成image1.jpg. image2.jpg. &hellip;</p>
@@ -243,127 +283,128 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 
 <p>4.为视频重新编码以适合在iPod/iPhone上播放</p>
 
-<pre><code>ffmpeg -i source_video.avi input -acodec aac -ab 128kb -vcodec mpeg4 -b 1200kb -mbd 2 -flags +4mv+trell -aic 2 -cmp 2 -subcmp 2 -s 320x180 -title X final_video.mp4
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi input -acodec aac -ab 128kb -vcodec mpeg4 -b 1200kb -mbd 2 -flags +4mv+trell -aic 2 -cmp 2 -subcmp 2 -s 320x180 -title X final_video.mp4
 </code></pre>
 
 <p>5.为视频重新编码以适合在PSP上播放</p>
 
-<pre><code>ffmpeg -i source_video.avi -b 300 -s 320x240 -vcodec xvid -ab 32 -ar 24000 -acodec aac final_video.mp4
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi -b 300 -s 320x240 -vcodec xvid -ab 32 -ar 24000 -acodec aac final_video.mp4
 </code></pre>
 
 <p>6.从视频抽出声音.并存为Mp3</p>
 
-<pre><code>ffmpeg -i source_video.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 sound.mp3
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 sound.mp3
 </code></pre>
 
 <p>7.将wav文件转成Mp3</p>
 
-<pre><code>ffmpeg -i son_origine.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 son_final.mp3
+<pre><code>/usr/local/bin/ffmpeg -i son_origine.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 son_final.mp3
 </code></pre>
 
 <p>8.将.avi视频转成.mpg</p>
 
-<pre><code>ffmpeg -i video_origine.avi video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi video_finale.mpg
 </code></pre>
 
 <p>9.将.mpg转成.avi</p>
 
-<pre><code>ffmpeg -i video_origine.mpg video_finale.avi
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.mpg video_finale.avi
 </code></pre>
 
 <p>10.将.avi转成gif动画（未压缩）</p>
 
-<pre><code>ffmpeg -i video_origine.avi gif_anime.gif
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi gif_anime.gif
 </code></pre>
 
 <p>11.合成视频和音频</p>
 
-<pre><code>ffmpeg -i son.wav -i video_origine.avi video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i son.wav -i video_origine.avi video_finale.mpg
 </code></pre>
 
 <p>12.将.avi转成.flv</p>
 
-<pre><code>ffmpeg -i video_origine.avi -ab 56 -ar 44100 -b 200 -r 15 -s 320x240 -f flv video_finale.flv
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -ab 56 -ar 44100 -b 200 -r 15 -s 320x240 -f flv video_finale.flv
 </code></pre>
 
 <p>13.将.avi转成dv</p>
 
-<pre><code>ffmpeg -i video_origine.avi -s pal -r pal -aspect 4:3 -ar 48000 -ac 2 video_finale.dv
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -s pal -r pal -aspect 4:3 -ar 48000 -ac 2 video_finale.dv
 </code></pre>
 
 <p>或者：</p>
 
-<pre><code>ffmpeg -i video_origine.avi -target pal-dv video_finale.dv
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-dv video_finale.dv
 </code></pre>
 
 <p>14.将.avi压缩成divx</p>
 
-<pre><code>ffmpeg -i video_origine.avi -s 320x240 -vcodec msmpeg4v2 video_finale.avi
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -s 320x240 -vcodec msmpeg4v2 video_finale.avi
 </code></pre>
 
 <p>15.将Ogg Theora压缩成Mpeg dvd</p>
 
-<pre><code>ffmpeg -i film_sortie_cinelerra.ogm -s 720x576 -vcodec mpeg2video -acodec mp3 film_terminate.mpg
+<pre><code>/usr/local/bin/ffmpeg -i film_sortie_cinelerra.ogm -s 720x576 -vcodec mpeg2video -acodec mp3 film_terminate.mpg
 </code></pre>
 
 <p>16.将.avi压缩成SVCD mpeg2</p>
 
 <p>NTSC格式：</p>
 
-<pre><code>ffmpeg -i video_origine.avi -target ntsc-svcd video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target ntsc-svcd video_finale.mpg
 </code></pre>
 
 <p>PAL格式：</p>
 
-<pre><code>ffmpeg -i video_origine.avi -target pal-dvcd video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-dvcd video_finale.mpg
 </code></pre>
 
 <p>17.将.avi压缩成VCD mpeg2</p>
 
 <pre><code>NTSC格式： 
-ffmpeg -i video_origine.avi -target ntsc-vcd video_finale.mpg
+/usr/local/bin/ffmpeg -i video_origine.avi -target ntsc-vcd video_finale.mpg
 </code></pre>
 
 <p>PAL格式：</p>
 
-<pre><code>ffmpeg -i video_origine.avi -target pal-vcd video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-vcd video_finale.mpg
 </code></pre>
 
 <p>18.多通道编码</p>
 
-<pre><code>ffmpeg -i fichierentree -pass 2 -passlogfile ffmpeg2pass fichiersortie-2
+<pre><code>/usr/local/bin/ffmpeg -i fichierentree -pass 2 -passlogfile ffmpeg2pass fichiersortie-2
 </code></pre>
 
-<p>19.从flv提取mp3</p>
+<p>19.从flv提取mp3
+<code>111</code></p>
 
-<pre><code>ffmpeg -i source.flv -ab 128k dest.mp3
+<pre><code>/usr/local/bin/ffmpeg -i source.flv -ab 128k dest.mp3
 </code></pre>
 
 <p>第四组</p>
 
 <p>1、将文件当做直播送至live</p>
 
-<pre><code>ffmpeg -re -i localFile.mp4 -c copy -f flv rtmp://server/live/streamName
+<pre><code>/usr/local/bin/ffmpeg -re -i localFile.mp4 -c copy -f flv rtmp://server/live/streamName
 </code></pre>
 
 <p>2、将直播媒体保存至本地文件</p>
 
-<pre><code>ffmpeg -i rtmp://server/live/streamName -c copy dump.flv
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/streamName -c copy dump.flv
 </code></pre>
 
 <p>3、将其中一个直播流，视频改用h264压缩，音频不变，送至另外一个直播服务流</p>
 
-<pre><code>ffmpeg -i rtmp://server/live/originalStream -c:a copy -c:v libx264 -vpre slow -f flv rtmp://server/live/h264Stream
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -c:a copy -c:v libx264 -vpre slow -f flv rtmp://server/live/h264Stream
 </code></pre>
 
 <p>4、将其中一个直播流，视频改用h264压缩，音频改用faac压缩，送至另外一个直播服务流</p>
 
-<pre><code>ffmpeg -i rtmp://server/live/originalStream -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://server/live/h264Stream
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://server/live/h264Stream
 </code></pre>
 
 <p>5、将其中一个直播流，视频不变，音频改用faac压缩，送至另外一个直播服务流</p>
 
-<pre><code>ffmpeg -i rtmp://server/live/originalStream -acodec libfaac -ar 44100 -ab 48k -vcodec copy -f flv rtmp://server/live/h264_AAC_Stream
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -acodec libfaac -ar 44100 -ab 48k -vcodec copy -f flv rtmp://server/live/h264_AAC_Stream
 </code></pre>
 
 <p>6、将一个高清流，复制为几个不同视频清晰度的流重新发布，其中音频不变</p>

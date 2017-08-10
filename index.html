@@ -111,7 +111,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2017/05/07/windows-xia-ffmpegshi-yong/">Windows 下ffmpeg使用</a></h1>
+      <h1 class="entry-title"><a href="/blog/2017/05/07/windows-xia-ffmpegshi-yong/">Ffmpeg使用</a></h1>
     
     
       <p class="meta">
@@ -129,27 +129,67 @@
 
   <div class="entry-content"><p>列出设备</p>
 
-<pre><code>1. ffmpeg -list_devices true -f dshow -i dummy  
+<pre><code>/usr/local/bin/ffmpeg -list_devices true -f dshow -i dummy  
 </code></pre>
 
 <p>保存文件</p>
 
-<pre><code>1. ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 mycamera.mkv  
+<pre><code>/usr/local/bin/ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 mycamera.mkv  
 </code></pre>
 
 <p>直接播放</p>
 
-<pre><code>1. ffplay -f dshow -i video="Integrated Camera"  
+<pre><code>/usr/local/bin/ffplay -f dshow -i video="Integrated Camera"  
 </code></pre>
 
 <p>推流</p>
 
-<pre><code>1. ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://192.168.1.5/mytv/test1
+<pre><code>/usr/local/bin/ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://192.168.1.5/mytv/test1
 </code></pre>
 
 <p>录制屏幕</p>
 
-<pre><code>1. ffmpeg -f -dshow -s 1600x900 -r 50 -vcodec libx264 –preset:v ultrafast –tune:v zerolatency -crf 18 -f mpegts rtmp://192.168.1.5/mytv/test2      在Windows平台下，使用-dshow取代x11grab
+<pre><code>/usr/local/bin/ffmpeg -f x11grab -s 1600x900 -r 50 -vcodec libx264 –preset:v ultrafast –tune:v zerolatency -crf 18 -f mpegts rtmp://192.168.1.5/mytv/test2      在Windows平台下，使用-dshow取代x11grab
+</code></pre>
+
+<p>抽帧存图</p>
+
+<p>/usr/local/bin/ffmpeg -i aa.mp4 -vframes 128 -r 1 -q:v 2 -f image2 -ss 90 ~/Downloads/image-1.jpeg;</p>
+
+<p>PHP结合ffmpeg获取视频/音频文件信息</p>
+
+<pre><code>$command = sprintf(FFMPEG_PATH, $file);
+
+ob_start();
+passthru($command);
+$info = ob_get_contents();
+ob_end_clean();
+
+$data = array();
+if (preg_match("/Duration: (.*?), start: (.*?), bitrate: (\d*) kb\/s/", $info, $match)) {
+    $data['duration'] = $match[1]; //播放时间
+    $arr_duration = explode(':', $match[1]);
+    $data['seconds'] = $arr_duration[0] * 3600 + $arr_duration[1] * 60 + $arr_duration[2]; //转换播放时间为秒数
+    $data['start'] = $match[2]; //开始时间
+    $data['bitrate'] = $match[3]; //码率(kb)
+}
+if (preg_match("/Video: (.*?), (.*?), (.*?)[,\s]/", $info, $match)) {
+    $data['vcodec'] = $match[1]; //视频编码格式
+    $data['vformat'] = $match[2]; //视频格式
+    $data['resolution'] = $match[3]; //视频分辨率
+    $arr_resolution = explode('x', $match[3]);
+    $data['width'] = $arr_resolution[0];
+    $data['height'] = $arr_resolution[1];
+}
+if (preg_match("/Audio: (\w*), (\d*) Hz/", $info, $match)) {
+    $data['acodec'] = $match[1]; //音频编码
+    $data['asamplerate'] = $match[2]; //音频采样频率
+}
+if (isset($data['seconds']) &amp;&amp; isset($data['start'])) {
+    $data['play_time'] = $data['seconds'] + $data['start']; //实际播放时间
+}
+$data['size'] = filesize($file); //文件大小
+return $data;
 </code></pre>
 
 <p>-i 指定输入的文件
@@ -158,16 +198,16 @@
 
 <p>最简单的抓屏：</p>
 
-<pre><code>ffmpeg -f gdigrab -i desktop out.mpg
+<pre><code>/usr/local/bin/ffmpeg -f gdigrab -i desktop out.mpg
 </code></pre>
 
 <p>从屏幕的（10,20）点处开始，抓取640x480的屏幕，设定帧率为5</p>
 
-<pre><code>ffmpeg -f gdigrab -framerate 5 -offset_x 10 -offset_y 20 -video_size 640x480 -i desktop out.mpg
+<pre><code>/usr/local/bin/ffmpeg -f gdigrab -framerate 5 -offset_x 10 -offset_y 20 -video_size 640x480 -i desktop out.mpg
 </code></pre>
 
 <p>//=======================================================================
-    ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
+    /usr/local/bin/ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
     对上面的命令稍做个解释。
     -ss 开始时间，如： 00:00:20，表示从20秒开始；
     -t 时长，如： 00:00:10，表示截取10秒长的视频；
@@ -177,10 +217,10 @@
     OUTPUT，输出视频文件；
 //=======================================================================</p>
 
-<pre><code>ffmpeg -f x11grab -s xga -r 10 -i :0.0+0+0 wheer.avi
+<pre><code>/usr/local/bin/ffmpeg -f x11grab -s xga -r 10 -i :0.0+0+0 wheer.avi
 -i video="screen-capture-recorder"
 
-ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectShow audio devices" -pix_fmt yuv420p -vcodec libx264 -acodec libvo_aacenc -s 1280x720 -r 25 -q 10 -ar 44100 -ac 2 -tune zerolatency -preset ultrafast -f mpegts - | ffmpeg -f mpegts -i - -c copy -bsf:a aac_adtstoasc -f flv temp.flv
+/usr/local/bin/ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectShow audio devices" -pix_fmt yuv420p -vcodec libx264 -acodec libvo_aacenc -s 1280x720 -r 25 -q 10 -ar 44100 -ac 2 -tune zerolatency -preset ultrafast -f mpegts - | ffmpeg -f mpegts -i - -c copy -bsf:a aac_adtstoasc -f flv temp.flv
 </code></pre>
 
 <p>-r选项设置每秒提取图片的帧数。
@@ -188,27 +228,27 @@ ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectSho
 
 <p>截取一张352x240尺寸大小的，格式为jpg的图片</p>
 
-<pre><code>ffmpeg -i 1.mp4 -y -f image2 -t 120.001 -s 352x240 a.jpg
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -y -f image2 -t 120.001 -s 352x240 a.jpg
 </code></pre>
 
 <p>把视频的前30帧转换成一个Animated Gif ：</p>
 
-<pre><code>ffmpeg -i 1.mp4 -vframes 30 -y -f gif a.gif
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -vframes 30 -y -f gif a.gif
 </code></pre>
 
 <p>生成缩略图</p>
 
-<pre><code>ffmpeg -i 1.mp4 -y -f image2 -ss 08.010 -t 0.001 -s 352x240 b.jpg
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -y -f image2 -ss 08.010 -t 0.001 -s 352x240 b.jpg
 </code></pre>
 
 <p>列出本机设备</p>
 
-<pre><code>ffmpeg -list_devices true -f dshow -i dummy
+<pre><code>/usr/local/bin/ffmpeg -list_devices true -f dshow -i dummy
 </code></pre>
 
 <p>从视频中生成gif图片</p>
 
-<pre><code>ffmpeg -i 1.mp4 -ss 10 -t 10   -s 480x360  tutu.gif
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -ss 10 -t 10   -s 480x360  tutu.gif
 </code></pre>
 
 <h2>-ss 指从 10s 开始转码,-t 指转换 10s 的视频 -s 指定尺寸</h2>
@@ -222,45 +262,45 @@ ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectSho
 
 <p>1.分离视频音频流</p>
 
-<pre><code>ffmpeg -i input_file -vcodec copy -an output_file_video　　//分离视频流ffmpeg -i input_file -acodec copy -vn output_file_audio　　//分离音频流
+<pre><code>/usr/local/bin/ffmpeg -i input_file -vcodec copy -an output_file_video　　//分离视频流ffmpeg -i input_file -acodec copy -vn output_file_audio　　//分离音频流
 </code></pre>
 
 <p>2.视频解复用</p>
 
-<pre><code>ffmpeg –i test.mp4 –vcodec copy –an –f m4v test.264
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec copy –an –f m4v test.264
 
-ffmpeg –i test.avi –vcodec copy –an –f m4v test.264
+/usr/local/bin/ffmpeg –i test.avi –vcodec copy –an –f m4v test.264
 </code></pre>
 
 <p>3.视频转码</p>
 
-<pre><code>ffmpeg –i test.mp4 –vcodec h264 –s 352*278 –an –f m4v test.264
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec h264 –s 352*278 –an –f m4v test.264
 </code></pre>
 
 <p>//转码为码流原始文件</p>
 
-<pre><code>ffmpeg –i test.mp4 –vcodec h264 –bf 0 –g 25 –s 352*278 –an –f m4v test.264 //转码为码流原始文件
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec h264 –bf 0 –g 25 –s 352*278 –an –f m4v test.264 //转码为码流原始文件
 
-ffmpeg –i test.avi -vcodec mpeg4 –vtag xvid –qsame test_xvid.avi //转码为封装文件
+/usr/local/bin/ffmpeg –i test.avi -vcodec mpeg4 –vtag xvid –qsame test_xvid.avi //转码为封装文件
 </code></pre>
 
 <p>说明：-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制</p>
 
 <p>4.视频封装</p>
 
-<pre><code>ffmpeg –i video_file –i audio_file –vcodec copy –acodec copy output_file
+<pre><code>/usr/local/bin/ffmpeg –i video_file –i audio_file –vcodec copy –acodec copy output_file
 </code></pre>
 
 <p>5.视频剪切</p>
 
-<pre><code>ffmpeg –i test.avi –r 1 –f image2 image-%3d.jpeg //提取图片
+<pre><code>/usr/local/bin/ffmpeg –i test.avi –r 1 –f image2 image-%3d.jpeg //提取图片
 
-ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //剪切视频//-r 提取图像的频率，-ss 开始时间，-t 持续时间
+/usr/local/bin/ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //剪切视频//-r 提取图像的频率，-ss 开始时间，-t 持续时间
 </code></pre>
 
 <p>6.视频录制</p>
 
-<pre><code>ffmpeg –i rtsp://192.168.3.205:5555/test –vcodec copy out.avi
+<pre><code>/usr/local/bin/ffmpeg –i rtsp://192.168.3.205:5555/test –vcodec copy out.avi
 </code></pre>
 
 <p>7、利用ffmpeg视频切片</p>
@@ -269,7 +309,7 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 
 <p>命令如下：</p>
 
-<pre><code>ffmpeg -i 视频源地址 -strict -2 -c:v libx264 -c:a aac -f hls m3u8文件输出地址
+<pre><code>/usr/local/bin/ffmpeg -i 视频源地址 -strict -2 -c:v libx264 -c:a aac -f hls m3u8文件输出地址
 </code></pre>
 
 <p>8、ffmpeg缩放视频</p>
@@ -287,7 +327,7 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 <ol>
 <li><p>转视频格式</p>
 
-<p>ffmpeng -i source.mp4 -c:v libx264 -crf 24 destination.flv</p></li>
+<p>/usr/local/bin/ffmpeg -i source.mp4 -c:v libx264 -crf 24 destination.flv</p></li>
 </ol>
 
 
@@ -301,22 +341,22 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 
 <p>1.ffmpeg 把文件当做直播推送至服务器 (RTMP + FLV)</p>
 
-<pre><code>ffmpeg - re -i demo.mp4 -c copy - f flv rtmp://w.gslb.letv/live/streamid
+<pre><code>/usr/local/bin/ffmpeg - re -i demo.mp4 -c copy - f flv rtmp://w.gslb.letv/live/streamid
 </code></pre>
 
 <p>2.将直播的媒体保存到本地</p>
 
-<pre><code>ffmpeg -i rtmp://r.glsb.letv/live/streamid -c copy streamfile.flv
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://r.glsb.letv/live/streamid -c copy streamfile.flv
 </code></pre>
 
 <p>3.将一个直播流，视频改用h264压缩，音频改用faac压缩，送至另一个直播服务器</p>
 
-<pre><code>ffmpeg -i rtmp://r.glsb.letv/live/streamidA -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://w.glsb.letv/live/streamb
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://r.glsb.letv/live/streamidA -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://w.glsb.letv/live/streamb
 </code></pre>
 
 <p>4.提取视频中的音频,并保存为mp3 然后输出</p>
 
-<pre><code>ffmpeg -i input.avi -b:a 128k output.mp3
+<pre><code>/usr/local/bin/ffmpeg -i input.avi -b:a 128k output.mp3
 </code></pre>
 
 <ol>
@@ -330,19 +370,19 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 
 <p>1.获取视频的信息</p>
 
-<pre><code>ffmpeg -i video.avi
+<pre><code>/usr/local/bin/ffmpeg -i video.avi
 </code></pre>
 
 <p>2.将图片序列合成视频</p>
 
-<pre><code>ffmpeg -f image2 -i image%d.jpg video.mpg
+<pre><code>/usr/local/bin/ffmpeg -f image2 -i image%d.jpg video.mpg
 </code></pre>
 
 <p>上面的命令会把当前目录下的图片（名字如：image1.jpg. image2.jpg. 等&hellip;）合并成video.mpg</p>
 
 <p>3.将视频分解成图片序列</p>
 
-<pre><code>ffmpeg -i video.mpg image%d.jpg
+<pre><code>/usr/local/bin/ffmpeg -i video.mpg image%d.jpg
 </code></pre>
 
 <p>上面的命令会生成image1.jpg. image2.jpg. &hellip;</p>
@@ -352,127 +392,128 @@ ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //
 
 <p>4.为视频重新编码以适合在iPod/iPhone上播放</p>
 
-<pre><code>ffmpeg -i source_video.avi input -acodec aac -ab 128kb -vcodec mpeg4 -b 1200kb -mbd 2 -flags +4mv+trell -aic 2 -cmp 2 -subcmp 2 -s 320x180 -title X final_video.mp4
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi input -acodec aac -ab 128kb -vcodec mpeg4 -b 1200kb -mbd 2 -flags +4mv+trell -aic 2 -cmp 2 -subcmp 2 -s 320x180 -title X final_video.mp4
 </code></pre>
 
 <p>5.为视频重新编码以适合在PSP上播放</p>
 
-<pre><code>ffmpeg -i source_video.avi -b 300 -s 320x240 -vcodec xvid -ab 32 -ar 24000 -acodec aac final_video.mp4
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi -b 300 -s 320x240 -vcodec xvid -ab 32 -ar 24000 -acodec aac final_video.mp4
 </code></pre>
 
 <p>6.从视频抽出声音.并存为Mp3</p>
 
-<pre><code>ffmpeg -i source_video.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 sound.mp3
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 sound.mp3
 </code></pre>
 
 <p>7.将wav文件转成Mp3</p>
 
-<pre><code>ffmpeg -i son_origine.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 son_final.mp3
+<pre><code>/usr/local/bin/ffmpeg -i son_origine.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 son_final.mp3
 </code></pre>
 
 <p>8.将.avi视频转成.mpg</p>
 
-<pre><code>ffmpeg -i video_origine.avi video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi video_finale.mpg
 </code></pre>
 
 <p>9.将.mpg转成.avi</p>
 
-<pre><code>ffmpeg -i video_origine.mpg video_finale.avi
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.mpg video_finale.avi
 </code></pre>
 
 <p>10.将.avi转成gif动画（未压缩）</p>
 
-<pre><code>ffmpeg -i video_origine.avi gif_anime.gif
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi gif_anime.gif
 </code></pre>
 
 <p>11.合成视频和音频</p>
 
-<pre><code>ffmpeg -i son.wav -i video_origine.avi video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i son.wav -i video_origine.avi video_finale.mpg
 </code></pre>
 
 <p>12.将.avi转成.flv</p>
 
-<pre><code>ffmpeg -i video_origine.avi -ab 56 -ar 44100 -b 200 -r 15 -s 320x240 -f flv video_finale.flv
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -ab 56 -ar 44100 -b 200 -r 15 -s 320x240 -f flv video_finale.flv
 </code></pre>
 
 <p>13.将.avi转成dv</p>
 
-<pre><code>ffmpeg -i video_origine.avi -s pal -r pal -aspect 4:3 -ar 48000 -ac 2 video_finale.dv
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -s pal -r pal -aspect 4:3 -ar 48000 -ac 2 video_finale.dv
 </code></pre>
 
 <p>或者：</p>
 
-<pre><code>ffmpeg -i video_origine.avi -target pal-dv video_finale.dv
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-dv video_finale.dv
 </code></pre>
 
 <p>14.将.avi压缩成divx</p>
 
-<pre><code>ffmpeg -i video_origine.avi -s 320x240 -vcodec msmpeg4v2 video_finale.avi
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -s 320x240 -vcodec msmpeg4v2 video_finale.avi
 </code></pre>
 
 <p>15.将Ogg Theora压缩成Mpeg dvd</p>
 
-<pre><code>ffmpeg -i film_sortie_cinelerra.ogm -s 720x576 -vcodec mpeg2video -acodec mp3 film_terminate.mpg
+<pre><code>/usr/local/bin/ffmpeg -i film_sortie_cinelerra.ogm -s 720x576 -vcodec mpeg2video -acodec mp3 film_terminate.mpg
 </code></pre>
 
 <p>16.将.avi压缩成SVCD mpeg2</p>
 
 <p>NTSC格式：</p>
 
-<pre><code>ffmpeg -i video_origine.avi -target ntsc-svcd video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target ntsc-svcd video_finale.mpg
 </code></pre>
 
 <p>PAL格式：</p>
 
-<pre><code>ffmpeg -i video_origine.avi -target pal-dvcd video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-dvcd video_finale.mpg
 </code></pre>
 
 <p>17.将.avi压缩成VCD mpeg2</p>
 
 <pre><code>NTSC格式： 
-ffmpeg -i video_origine.avi -target ntsc-vcd video_finale.mpg
+/usr/local/bin/ffmpeg -i video_origine.avi -target ntsc-vcd video_finale.mpg
 </code></pre>
 
 <p>PAL格式：</p>
 
-<pre><code>ffmpeg -i video_origine.avi -target pal-vcd video_finale.mpg
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-vcd video_finale.mpg
 </code></pre>
 
 <p>18.多通道编码</p>
 
-<pre><code>ffmpeg -i fichierentree -pass 2 -passlogfile ffmpeg2pass fichiersortie-2
+<pre><code>/usr/local/bin/ffmpeg -i fichierentree -pass 2 -passlogfile ffmpeg2pass fichiersortie-2
 </code></pre>
 
-<p>19.从flv提取mp3</p>
+<p>19.从flv提取mp3
+<code>111</code></p>
 
-<pre><code>ffmpeg -i source.flv -ab 128k dest.mp3
+<pre><code>/usr/local/bin/ffmpeg -i source.flv -ab 128k dest.mp3
 </code></pre>
 
 <p>第四组</p>
 
 <p>1、将文件当做直播送至live</p>
 
-<pre><code>ffmpeg -re -i localFile.mp4 -c copy -f flv rtmp://server/live/streamName
+<pre><code>/usr/local/bin/ffmpeg -re -i localFile.mp4 -c copy -f flv rtmp://server/live/streamName
 </code></pre>
 
 <p>2、将直播媒体保存至本地文件</p>
 
-<pre><code>ffmpeg -i rtmp://server/live/streamName -c copy dump.flv
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/streamName -c copy dump.flv
 </code></pre>
 
 <p>3、将其中一个直播流，视频改用h264压缩，音频不变，送至另外一个直播服务流</p>
 
-<pre><code>ffmpeg -i rtmp://server/live/originalStream -c:a copy -c:v libx264 -vpre slow -f flv rtmp://server/live/h264Stream
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -c:a copy -c:v libx264 -vpre slow -f flv rtmp://server/live/h264Stream
 </code></pre>
 
 <p>4、将其中一个直播流，视频改用h264压缩，音频改用faac压缩，送至另外一个直播服务流</p>
 
-<pre><code>ffmpeg -i rtmp://server/live/originalStream -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://server/live/h264Stream
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://server/live/h264Stream
 </code></pre>
 
 <p>5、将其中一个直播流，视频不变，音频改用faac压缩，送至另外一个直播服务流</p>
 
-<pre><code>ffmpeg -i rtmp://server/live/originalStream -acodec libfaac -ar 44100 -ab 48k -vcodec copy -f flv rtmp://server/live/h264_AAC_Stream
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -acodec libfaac -ar 44100 -ab 48k -vcodec copy -f flv rtmp://server/live/h264_AAC_Stream
 </code></pre>
 
 <p>6、将一个高清流，复制为几个不同视频清晰度的流重新发布，其中音频不变</p>
@@ -613,49 +654,6 @@ make &amp;&amp; make install
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/10/19/wangzhan-paizhao/">经营一个网站需要哪些牌照资质</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-10-19T10:58:37+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:58 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li>信息产业部ICP备案,主要是针对非经营性网站，任何一个在国内的网站都要备案。审批机构：工业与信息化部</li>
-<li>电信与信息服务业务经营许可证(ICP)主要是针对经营性互联网信息服务网站，注册资金要求100万以上，北京的证叫这个名字，全国其它地方的证的名称为“增值电信业务经营许可证”，经营范围为 互联网信息服务业务。审批机构：各地通信管理局</li>
-<li>电子公告服务:电信业务审批主要是针对设有电子公告服务(bbs)论坛网站。审批机构：各 地通信管理局</li>
-<li>经营性网站备案,经营性网站备案，是指经营性网站向工商行政管理机关申请备案，工商行政管 理机关在网站的首页上加贴经营性网站备案电子标识，并将备案信息向社会公开。审批机构：北京市工商行政管理局</li>
-<li>增值电信业务经营许可证(移动网信息服务业务SP)主要是针对提供移动网无线增值信息服 务业务需要办理的。审批机构：各地通信管理局</li>
-<li>互联网新闻信息服务许可证主要针对从事登载新闻业务的网站。审批机构：国务院新闻办</li>
-<li>网络文化经营许可证主要针对经营互联网文化产品和提供互联网文化产品及其服务的网站。审批机构：省级文化行政部门（2010.08.01日开始下放到省级）</li>
-<li>互联网药品信息服务资格证书主要针对经营互联网药品信息服务的网站。审批机构：北京 市药品监督管理局</li>
-<li>互联网出版许可证主要针对经营互联网出版类电子商务业务的网站。审批机构：新闻出版总署</li>
-<li>网络视听节目传播许可证（有新旧之分，新的目前据传只有5家）信息网络视听节目许可证》由广电总局按照信息网络传播视听节目的业务类别、接收终端、传输网络等项目分类核发。 审批机构：广电总局</li>
-<li>互联网卫生信息服务管理主要针对经营互联网卫生信息服务业务的网站。审批机构：北京市卫生局</li>
-<li>电子支付牌照（即将推出）主要是对电子支付企业实行牌照制度，传闻在今年第一季度发放，大概包括支付宝在内的10家公司可获得牌照。 审批机构：中国人民银行</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
       <h1 class="entry-title"><a href="/blog/2014/10/19/mysql-shell-prompt-metachar/">MySQL 的 Prompt 转义字符</a></h1>
     
     
@@ -701,286 +699,6 @@ make &amp;&amp; make install
 \\    ：A literal “\” backslash character
 \x    ：x, for any “x” not listed above
 </code></pre>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/01/sed-man-page/">Sed-man-page</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-09-01T18:30:03+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>6:30 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>NAME
-       sed - stream editor for filtering and transforming text</p>
-
-<p>SYNOPSIS
-       sed [OPTION]&hellip; {script-only-if-no-other-script} [input-file]&hellip;</p>
-
-<p>DESCRIPTION
-       Sed  is  a stream editor.  A stream editor is used to perform basic text transformations on an input stream (a file
-       or input from a pipeline).  While in some ways similar to an editor which permits scripted edits (such as ed),  sed
-       works  by  making  only one pass over the input(s), and is consequently more efficient.  But it is sed&rsquo;s ability to
-       filter text in a pipeline which particularly distinguishes it from other types of editors.</p>
-
-<pre><code>   -n, --quiet, --silent
-
-          suppress automatic printing of pattern space
-
-   -e script, --expression=script
-
-          add the script to the commands to be executed
-
-   -f script-file, --file=script-file
-
-          add the contents of script-file to the commands to be executed
-
-   --follow-symlinks
-
-          follow symlinks when processing in place
-
-   -i[SUFFIX], --in-place[=SUFFIX]
-
-          edit files in place (makes backup if SUFFIX supplied)
-
-   -b, --binary
-
-          open files in binary mode (CR+LFs are not processed specially)
-
-   -l N, --line-length=N
-
-          specify the desired line-wrap length for the `l' command
-
-   --posix
-
-          disable all GNU extensions.
-
-   -r, --regexp-extended
-
-          use extended regular expressions in the script.
-
-   -s, --separate
-
-          consider files as separate rather than as a single continuous long stream.
-
-   -u, --unbuffered
-
-          load minimal amounts of data from the input files and flush the output buffers more often
-
-   -z, --null-data
-
-          separate lines by NUL characters
-
-   --help
-          display this help and exit
-
-   --version
-          output version information and exit
-
-   If no -e, --expression, -f, or --file option is given, then the first non-option  argument  is  taken  as  the  sed
-   script  to  interpret.  All remaining arguments are names of input files; if no input files are specified, then the
-   standard input is read.
-
-   GNU sed home page: &lt;http://www.gnu.org/software/sed/&gt;.  General help using GNU software:  &lt;http://www.gnu.org/geth‐
-   elp/&gt;.   E-mail  bug  reports  to:  &lt;bug-sed@gnu.org&gt;.  Be sure to include the word ``sed'' somewhere in the ``Sub‐
-   ject:'' field.
-</code></pre>
-
-<p>COMMAND SYNOPSIS
-       This is just a brief synopsis of sed commands to serve as a reminder to those who already know sed; other  documen‐
-       tation (such as the texinfo document) must be consulted for fuller descriptions.</p>
-
-<p>   Zero-address &ldquo;commands&rdquo;
-       : label
-              Label for b and t commands.</p>
-
-<pre><code>   #comment
-          The comment extends until the next newline (or the end of a -e script fragment).
-
-   }      The closing bracket of a { } block.
-</code></pre>
-
-<p>   Zero- or One- address commands
-       =      Print the current line number.</p>
-
-<pre><code>   a \
-
-   text   Append text, which has each embedded newline preceded by a backslash.
-
-   i \
-
-   text   Insert text, which has each embedded newline preceded by a backslash.
-
-   q [exit-code]
-          Immediately quit the sed script without processing any more input, except that if auto-print is not disabled
-          the current pattern space will be printed.  The exit code argument is a GNU extension.
-
-   Q [exit-code]
-          Immediately quit the sed script without processing any more input.  This is a GNU extension.
-
-   r filename
-          Append text read from filename.
-
-   R filename
-          Append a line read from filename.  Each invocation of the command reads a line from the file.  This is a GNU
-          extension.
-</code></pre>
-
-<p>   Commands which accept address ranges
-       {      Begin a block of commands (end with a }).</p>
-
-<pre><code>   b label
-          Branch to label; if label is omitted, branch to end of script.
-
-   c \
-
-   text   Replace the selected lines with text, which has each embedded newline preceded by a backslash.
-
-   d      Delete pattern space.  Start next cycle.
-
-   D      If  pattern  space contains no newline, start a normal new cycle as if the d command was issued.  Otherwise,
-          delete text in the pattern space up to the first newline, and  restart  cycle  with  the  resultant  pattern
-          space, without reading a new line of input.
-
-   h H    Copy/append pattern space to hold space.
-
-   g G    Copy/append hold space to pattern space.
-
-   l      List out the current line in a ``visually unambiguous'' form.
-
-   l width
-          List  out  the  current line in a ``visually unambiguous'' form, breaking it at width characters.  This is a
-          GNU extension.
-
-   n N    Read/append the next line of input into the pattern space.
-
-   p      Print the current pattern space.
-
-   P      Print up to the first embedded newline of the current pattern space.
-
-   s/regexp/replacement/
-          Attempt to match regexp against the pattern  space.   If  successful,  replace  that  portion  matched  with
-          replacement.   The  replacement  may contain the special character &amp; to refer to that portion of the pattern
-          space which matched, and the special escapes \1 through \9 to  refer  to  the  corresponding  matching  sub-
-          expressions in the regexp.
-
-   t label
-          If  a  s///  has done a successful substitution since the last input line was read and since the last t or T
-          command, then branch to label; if label is omitted, branch to end of script.
-
-   T label
-          If no s/// has done a successful substitution since the last input line was read and since the last t  or  T
-          command, then branch to label; if label is omitted, branch to end of script.  This is a GNU extension.
-
-   w filename
-          Write the current pattern space to filename.
-
-   W filename
-          Write the first line of the current pattern space to filename.  This is a GNU extension.
-
-   x      Exchange the contents of the hold and pattern spaces.
-
-   y/source/dest/
-          Transliterate  the  characters in the pattern space which appear in source to the corresponding character in
-          dest.
-</code></pre>
-
-<p>Addresses
-       Sed commands can be given with no addresses, in which case the command will be executed for all input  lines;  with
-       one  address, in which case the command will only be executed for input lines which match that address; or with two
-       addresses, in which case the command will be executed for all input lines which match the inclusive range of  lines
-       starting  from  the first address and continuing to the second address.  Three things to note about address ranges:
-       the syntax is addr1,addr2 (i.e., the addresses are separated by a comma); the line which addr1 matched will  always
-       be  accepted,  even  if  addr2 selects an earlier line; and if addr2 is a regexp, it will not be tested against the
-       line that addr1 matched.</p>
-
-<pre><code>   After the address (or address-range), and before the command, a !  may be inserted, which specifies that  the  com‐
-   mand shall only be executed if the address (or address-range) does not match.
-
-   The following address types are supported:
-
-   number Match  only  the  specified line number (which increments cumulatively across files, unless the -s option is
-          specified on the command line).
-
-   first~step
-          Match every step'th line starting with line first.  For example, ``sed -n 1~2p'' will print all the odd-num‐
-          bered  lines in the input stream, and the address 2~5 will match every fifth line, starting with the second.
-          first can be zero; in this case, sed operates as if it were equal to step.  (This is an extension.)
-
-   $      Match the last line.
-
-   /regexp/
-          Match lines matching the regular expression regexp.
-
-   \cregexpc
-          Match lines matching the regular expression regexp.  The c may be any character.
-
-   GNU sed also supports some special 2-address forms:
-
-   0,addr2
-          Start out in "matched first address" state, until addr2 is found.  This is similar to 1,addr2,  except  that
-          if  addr2 matches the very first line of input the 0,addr2 form will be at the end of its range, whereas the
-          1,addr2 form will still be at the beginning of its range.  This works only when addr2 is a  regular  expres‐
-          sion.
-
-   addr1,+N
-          Will match addr1 and the N lines following addr1.
-
-   addr1,~N
-          Will  match addr1 and the lines following addr1 until the next line whose input line number is a multiple of
-          N.
-</code></pre>
-
-<p>REGULAR EXPRESSIONS
-       POSIX.2 BREs should be supported, but they aren&rsquo;t completely because of performance problems.  The \n sequence in a
-       regular expression matches the newline character, and similarly for \a, \t, and other sequences.</p>
-
-<p>BUGS
-       E-mail  bug  reports  to <a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;&#x3a;&#98;&#117;&#x67;&#45;&#x73;&#x65;&#x64;&#64;&#103;&#x6e;&#x75;&#46;&#111;&#x72;&#x67;&#46;">&#98;&#x75;&#x67;&#x2d;&#115;&#101;&#100;&#64;&#103;&#x6e;&#x75;&#46;&#x6f;&#x72;&#x67;&#x2e;</a>  Also, please include the output of &ldquo;sed &ndash;version&rdquo; in the body of your
-       report if at all possible.</p>
-
-<p>AUTHOR
-       Written by Jay Fenlason, Tom Lord, Ken Pizzini, and Paolo Bonzini.  GNU sed  home  page:  &lt;<a href="http://www.gnu.org/soft%E2%80%90">http://www.gnu.org/soft%E2%80%90</a>
-       ware/sed/>.   General  help  using  GNU  software:  <a href="http://www.gnu.org/gethelp/">http://www.gnu.org/gethelp/</a>.   E-mail  bug  reports to: <bug-
-       sed@gnu.org>.  Be sure to include the word &ldquo;sed&rdquo; somewhere in the &ldquo;Subject:&rdquo; field.</p>
-
-<p>COPYRIGHT
-       Copyright  ©  2012  Free  Software   Foundation,   Inc.    License   GPLv3+:   GNU   GPL   version   3   or   later
-       <a href="http://gnu.org/licenses/gpl.html">http://gnu.org/licenses/gpl.html</a>.
-       This  is  free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted
-       by law.</p>
-
-<p>SEE ALSO
-       awk(1), ed(1), grep(1), tr(1), perlre(1), sed.info, any of various books on sed, the sed FAQ
-       (<a href="http://sed.sf.net/grabbag/tutorials/sedfaq.txt">http://sed.sf.net/grabbag/tutorials/sedfaq.txt</a>), <a href="http://sed.sf.net/grabbag/.">http://sed.sf.net/grabbag/.</a></p>
-
-<pre><code>   The full documentation for sed is maintained as a Texinfo manual.  If the info and sed programs are properly
-   installed at your site, the command
-
-          info sed
-
-   should give you access to the complete manual.
-</code></pre>
-
-<p>sed 4.2.2                                                June 2013                                                  SED(1)</p>
 </div>
   
   
@@ -1223,6 +941,131 @@ awk &lsquo;{ x += $2 } END { print x }&rsquo;
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/31/php-break-keywork/">PHP Break 关键字</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-31T09:26:19+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>9:26 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>php的break关键字可以接受一个可选的数字参数来决定跳出几重循环
+break 结束当前 for，foreach，while，do-while 或者 switch 结构的执行。
+break可以接受一个可选的数字参数来决定跳出几重循环。</p>
+
+<pre><code>&lt;?php
+    $arr = array('one', 'two', 'three', 'four', 'stop', 'five');
+    while (list (, $val) = each($arr)) {
+        if ($val == 'stop') {
+            break;    /* You could also write 'break 1;' here. */
+        }
+        echo "$val&lt;br /&gt;\n";
+    }
+
+    /* Using the optional argument. */
+
+    $i = 0;
+    while (++$i) {
+        switch ($i) {
+        case 5:
+            echo "At 5&lt;br /&gt;\n";
+            break 1;  /* Exit only the switch. */
+        case 10:
+            echo "At 10; quitting&lt;br /&gt;\n";
+            break2;  /* Exit the switch and the while. */
+        default:
+            break;
+        }
+    }
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/20/octopress-add-category2rightaside/">Octopress添加分类到侧边栏</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-05-20T23:02:11+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:02 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>增加category_list插件</h2>
+
+<p>保存以下代码到plugins/category_list_tag.rb：</p>
+
+<pre><code>module Jekyll
+  class CategoryListTag &lt; Liquid::Tag
+    def render(context)
+      html = ""
+      categories = context.registers[:site].categories.keys
+      categories.sort.each do |category|
+        posts_in_category = context.registers[:site].categories[category].size
+        category_dir = context.registers[:site].config['category_dir']
+        category_url = File.join(category_dir, category.gsub(/_|\P{Word}/, '-').gsub(/-{2,}/, '-').downcase)
+        html &lt;&lt; "&lt;li class='category'&gt;&lt;a href='/#{category_url}/'&gt;#{category} (#{posts_in_category})&lt;/a&gt;&lt;/li&gt;\n"
+      end
+      html
+    end
+  end
+end
+</code></pre>
+
+<p>Liquid::Template.register_tag(&lsquo;category_list&rsquo;, Jekyll::CategoryListTag)<br/>
+这个插件会向liquid注册一个名为category_list的tag，该tag就是以li的形式将站点所有的category组织起来。如果要将category加入到侧边导航栏，需要增加一个aside。</p>
+
+<h2>增加aside</h2>
+
+<p>复制以下代码到source/_includes/asides/category_list.html。</p>
+
+<pre><code>&lt;section&gt;
+  &lt;h1&gt;Categories&lt;/h1&gt;
+  &lt;ul id="categories"&gt;
+    { % category_list % }
+  &lt;/ul&gt;
+&lt;/section&gt;
+</code></pre>
+
+<h2>配置侧边栏需要修改_config.yml文件，修改其default_asides项：</h2>
+
+<p>default_asides: [asides/category_list.html, asides/recent_posts.html]<br/>
+以上asides根据自己的需求调整。</p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1242,7 +1085,7 @@ awk &lsquo;{ x += $2 } END { print x }&rsquo;
       </li>
     
       <li class="post">
-        <a href="/blog/2017/05/07/windows-xia-ffmpegshi-yong/">Windows 下ffmpeg使用</a>
+        <a href="/blog/2017/05/07/windows-xia-ffmpegshi-yong/">Ffmpeg使用</a>
       </li>
     
       <li class="post">
@@ -1254,7 +1097,7 @@ awk &lsquo;{ x += $2 } END { print x }&rsquo;
       </li>
     
       <li class="post">
-        <a href="/blog/2014/10/19/wangzhan-paizhao/">经营一个网站需要哪些牌照资质</a>
+        <a href="/blog/2014/10/19/mysql-shell-prompt-metachar/">MySQL 的 Prompt 转义字符</a>
       </li>
     
   </ul>
