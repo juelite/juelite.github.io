@@ -552,6 +552,103 @@ return $data;
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/08/11/gperftools-profile-nginx-mysql-memory/">Gperftools优化nginx和mysql的内存分配</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-11T12:23:38+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:23 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h6>###########  Google 开发的 gperftools 包含四个工具，分别是：TCMalloc、heap-checker、heap-profiler 和 cpu-profiler</h6>
+
+<h6>###########  TCMalloc是 gperftools 的其中一个工具，用于优化C++写的多线程应用，与标准的glibc库的malloc相比，TCMalloc在内存的分配效率和速度要高，可以在高并发的情况下很好的控制内存的使用，提高服务器的性能，降低负载。</h6>
+
+<h6>###########  使用 TCMalloc 优化 Nginx 和 MySQL 的内存管理，性能将会有一定程度的提升，特别是对MYSQL服务器高并发下情况下的性能。</h6>
+
+<h6>###########  安装 libunwind 库</h6>
+
+<h6>###########  如果系统是64位的需要先安装libunwind库，32位系统则不需要安装。</h6>
+
+<h6>###########  libunwind 库为基于64位CPU和操作系统的程序提供了基本的堆栈辗转开解功能，其中包括用于输出堆栈跟踪的API、用于以编程方式辗转开解堆栈的API以及支持C++异常处理机制的API。</h6>
+
+<p>wget <a href="http://download.savannah.gnu.org/releases/libunwind/libunwind-1.0.1.tar.gz">http://download.savannah.gnu.org/releases/libunwind/libunwind-1.0.1.tar.gz</a>
+tar -zxvf libunwind-1.0.1.tar.gz
+cd libunwind-1.0.1/
+CFLAGS=-fPIC ./configure
+make CFLAGS=-fPIC
+make CFLAGS=-fPIC install
+cd ../</p>
+
+<h6>###########  gperftools 的安装</h6>
+
+<h6>###########  gperftools 项目网站 <a href="http://code.google.com/p/gperftools/">http://code.google.com/p/gperftools/</a></h6>
+
+<p>wget <a href="http://gperftools.googlecode.com/files/gperftools-2.0.tar.gz">http://gperftools.googlecode.com/files/gperftools-2.0.tar.gz</a>
+tar -zxvf gperftools-2.0.tar.gz
+cd gperftools-2.0
+./configure &ndash;prefix=/usr/local &ndash;enable-frame-pointers
+make
+make install
+cd ../</p>
+
+<h6>###########  如果是32位系统,可以不添加 –enable-frame-pointers</h6>
+
+<h6>###########  如果是64位系统，并且之前没有安装libunwind，那么一定要添加 –enable-frame-pointers 参数。</h6>
+
+<p>echo &ldquo;/usr/local/lib&rdquo; > /etc/ld.so.conf.d/usr_local_lib.conf
+/sbin/ldconfig</p>
+
+<h6>###########  为 gperftools 添加线程目录:</h6>
+
+<p>mkdir /tmp/tcmalloc
+chmod 0777 /tmp/tcmalloc</p>
+
+<h6>###########  使用gperftools优化Nginx：</h6>
+
+<h6>###########  为了使 Nginx 支持 gperftools，增加参数 –with-google_perftools_module 重新编译Nginx。</h6>
+
+<h6>###########  修改/usr/local/nginx/conf/nginx.conf</h6>
+
+<h6>###########  在pid这行的下面添加</h6>
+
+<p>google_perftools_profiles /tmp/tcmalloc;</p>
+
+<h6>###########  重新启动nginx</h6>
+
+<h6>###########  使用gperftools优化MYSQL：</h6>
+
+<h6>###########  查找文件 /usr/local/mysql/bin/mysqld_safe</h6>
+
+<h6>###########  在# executing mysqld_safe 下面加上</h6>
+
+<p>export LD_PRELOAD=/usr/local/lib/libtcmalloc.so</p>
+
+<h6>###########  重新启动MYSQL</h6>
+
+<h6>###########  验证 tcmalloc 是否运行：</h6>
+
+<p>lsof -n | grep tcmalloc</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/01/06/htop/">Htop是个好东西</a></h1>
     
     
@@ -998,74 +1095,6 @@ break可以接受一个可选的数字参数来决定跳出几重循环。</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/05/20/octopress-add-category2rightaside/">Octopress添加分类到侧边栏</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-05-20T23:02:11+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:02 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>增加category_list插件</h2>
-
-<p>保存以下代码到plugins/category_list_tag.rb：</p>
-
-<pre><code>module Jekyll
-  class CategoryListTag &lt; Liquid::Tag
-    def render(context)
-      html = ""
-      categories = context.registers[:site].categories.keys
-      categories.sort.each do |category|
-        posts_in_category = context.registers[:site].categories[category].size
-        category_dir = context.registers[:site].config['category_dir']
-        category_url = File.join(category_dir, category.gsub(/_|\P{Word}/, '-').gsub(/-{2,}/, '-').downcase)
-        html &lt;&lt; "&lt;li class='category'&gt;&lt;a href='/#{category_url}/'&gt;#{category} (#{posts_in_category})&lt;/a&gt;&lt;/li&gt;\n"
-      end
-      html
-    end
-  end
-end
-</code></pre>
-
-<p>Liquid::Template.register_tag(&lsquo;category_list&rsquo;, Jekyll::CategoryListTag)<br/>
-这个插件会向liquid注册一个名为category_list的tag，该tag就是以li的形式将站点所有的category组织起来。如果要将category加入到侧边导航栏，需要增加一个aside。</p>
-
-<h2>增加aside</h2>
-
-<p>复制以下代码到source/_includes/asides/category_list.html。</p>
-
-<pre><code>&lt;section&gt;
-  &lt;h1&gt;Categories&lt;/h1&gt;
-  &lt;ul id="categories"&gt;
-    { % category_list % }
-  &lt;/ul&gt;
-&lt;/section&gt;
-</code></pre>
-
-<h2>配置侧边栏需要修改_config.yml文件，修改其default_asides项：</h2>
-
-<p>default_asides: [asides/category_list.html, asides/recent_posts.html]<br/>
-以上asides根据自己的需求调整。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1089,15 +1118,15 @@ end
       </li>
     
       <li class="post">
+        <a href="/blog/2015/08/11/gperftools-profile-nginx-mysql-memory/">Gperftools优化nginx和mysql的内存分配</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/06/htop/">Htop是个好东西</a>
       </li>
     
       <li class="post">
         <a href="/blog/2014/10/19/css-clearfix/">Css-clearfix</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/19/mysql-shell-prompt-metachar/">MySQL 的 Prompt 转义字符</a>
       </li>
     
   </ul>

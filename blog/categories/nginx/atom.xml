@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Nginx | 陌上花开 可缓缓归矣]]></title>
+  <link href="http://juelite.github.io/blog/categories/nginx/atom.xml" rel="self"/>
+  <link href="http://juelite.github.io/"/>
+  <updated>2017-08-10T18:06:15+08:00</updated>
+  <id>http://juelite.github.io/</id>
+  <author>
+    <name><![CDATA[juelite]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Gperftools优化nginx和mysql的内存分配]]></title>
+    <link href="http://juelite.github.io/blog/2015/08/11/gperftools-profile-nginx-mysql-memory/"/>
+    <updated>2015-08-11T12:23:38+08:00</updated>
+    <id>http://juelite.github.io/blog/2015/08/11/gperftools-profile-nginx-mysql-memory</id>
+    <content type="html"><![CDATA[<h6>###########  Google 开发的 gperftools 包含四个工具，分别是：TCMalloc、heap-checker、heap-profiler 和 cpu-profiler</h6>
+
+<h6>###########  TCMalloc是 gperftools 的其中一个工具，用于优化C++写的多线程应用，与标准的glibc库的malloc相比，TCMalloc在内存的分配效率和速度要高，可以在高并发的情况下很好的控制内存的使用，提高服务器的性能，降低负载。</h6>
+
+<h6>###########  使用 TCMalloc 优化 Nginx 和 MySQL 的内存管理，性能将会有一定程度的提升，特别是对MYSQL服务器高并发下情况下的性能。</h6>
+
+<h6>###########  安装 libunwind 库</h6>
+
+<h6>###########  如果系统是64位的需要先安装libunwind库，32位系统则不需要安装。</h6>
+
+<h6>###########  libunwind 库为基于64位CPU和操作系统的程序提供了基本的堆栈辗转开解功能，其中包括用于输出堆栈跟踪的API、用于以编程方式辗转开解堆栈的API以及支持C++异常处理机制的API。</h6>
+
+<p>wget <a href="http://download.savannah.gnu.org/releases/libunwind/libunwind-1.0.1.tar.gz">http://download.savannah.gnu.org/releases/libunwind/libunwind-1.0.1.tar.gz</a>
+tar -zxvf libunwind-1.0.1.tar.gz
+cd libunwind-1.0.1/
+CFLAGS=-fPIC ./configure
+make CFLAGS=-fPIC
+make CFLAGS=-fPIC install
+cd ../</p>
+
+<h6>###########  gperftools 的安装</h6>
+
+<h6>###########  gperftools 项目网站 <a href="http://code.google.com/p/gperftools/">http://code.google.com/p/gperftools/</a></h6>
+
+<p>wget <a href="http://gperftools.googlecode.com/files/gperftools-2.0.tar.gz">http://gperftools.googlecode.com/files/gperftools-2.0.tar.gz</a>
+tar -zxvf gperftools-2.0.tar.gz
+cd gperftools-2.0
+./configure &ndash;prefix=/usr/local &ndash;enable-frame-pointers
+make
+make install
+cd ../</p>
+
+<h6>###########  如果是32位系统,可以不添加 –enable-frame-pointers</h6>
+
+<h6>###########  如果是64位系统，并且之前没有安装libunwind，那么一定要添加 –enable-frame-pointers 参数。</h6>
+
+<p>echo &ldquo;/usr/local/lib&rdquo; > /etc/ld.so.conf.d/usr_local_lib.conf
+/sbin/ldconfig</p>
+
+<h6>###########  为 gperftools 添加线程目录:</h6>
+
+<p>mkdir /tmp/tcmalloc
+chmod 0777 /tmp/tcmalloc</p>
+
+<h6>###########  使用gperftools优化Nginx：</h6>
+
+<h6>###########  为了使 Nginx 支持 gperftools，增加参数 –with-google_perftools_module 重新编译Nginx。</h6>
+
+<h6>###########  修改/usr/local/nginx/conf/nginx.conf</h6>
+
+<h6>###########  在pid这行的下面添加</h6>
+
+<p>google_perftools_profiles /tmp/tcmalloc;</p>
+
+<h6>###########  重新启动nginx</h6>
+
+<h6>###########  使用gperftools优化MYSQL：</h6>
+
+<h6>###########  查找文件 /usr/local/mysql/bin/mysqld_safe</h6>
+
+<h6>###########  在# executing mysqld_safe 下面加上</h6>
+
+<p>export LD_PRELOAD=/usr/local/lib/libtcmalloc.so</p>
+
+<h6>###########  重新启动MYSQL</h6>
+
+<h6>###########  验证 tcmalloc 是否运行：</h6>
+
+<p>lsof -n | grep tcmalloc</p>
+]]></content>
+  </entry>
+  
+</feed>
