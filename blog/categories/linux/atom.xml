@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Linux | 不是所有的牛奶都叫特仑苏]]></title>
   <link href="http://wy.orzdress.com/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://wy.orzdress.com/"/>
-  <updated>2017-08-10T17:07:27+08:00</updated>
+  <updated>2017-08-10T17:08:32+08:00</updated>
   <id>http://wy.orzdress.com/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -18,7 +18,8 @@
     <link href="http://wy.orzdress.com/blog/2017/08/10/hello-juelite/"/>
     <updated>2017-08-10T16:55:30+08:00</updated>
     <id>http://wy.orzdress.com/blog/2017/08/10/hello-juelite</id>
-    <content type="html"><![CDATA[<pre><code>-- ![shell history 命令扩展](/images/shell_history.png "shell history 命令扩展")
+    <content type="html"><![CDATA[<pre><code>![shell history 命令扩展](/images/shell_history.png "shell history 命令扩展")
+
    !^ 获取上一条命令的第一个参数。
    !$ 获取上一条命令的最后一个参数。
    !:n 获取上一条命令的第n个参数，n从1开始。（为0时则挑选出命令名称）
