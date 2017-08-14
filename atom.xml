@@ -4,7 +4,7 @@
   <title><![CDATA[陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-08-14T17:00:25+08:00</updated>
+  <updated>2017-08-14T18:09:01+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -1482,7 +1482,7 @@ rpm -ql yum-cron
 <table>
 <thead>
 <tr>
-<th style="text-align:center;">符号 </th>
+<th style="text-align:center;">代码 </th>
 <th style="text-align:center;"> 释义 </th>
 </tr>
 </thead>
@@ -1524,7 +1524,7 @@ rpm -ql yum-cron
 <table>
 <thead>
 <tr>
-<th style="text-align:center;">符号 </th>
+<th style="text-align:center;">代码 </th>
 <th style="text-align:center;"> 释义 </th>
 </tr>
 </thead>
@@ -1562,7 +1562,7 @@ rpm -ql yum-cron
 <table>
 <thead>
 <tr>
-<th style="text-align:center;">符号</th>
+<th style="text-align:center;">代码</th>
 <th style="text-align:center;">释义</th>
 </tr>
 </thead>
@@ -1763,7 +1763,158 @@ rpm -ql yum-cron
 
 <p>如果你把它改成\d{5}|\d{5}-\d{4}的话，那么就只会匹配5位的邮编(以及9位邮编的前5位)。</p>
 
-<p>取反义实例：</p>
+<h4>取反义</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;a[^&gt;]+&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>匹配用尖括号括起来的以a开头的字符串。
+匹配以 除 a 标签以外的标签</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#匹配以 除 a 标签以外的元素
+</span><span class='line'>$str = '&lt;a&gt;baidu&lt;/a&gt; 
+</span><span class='line'>      &lt;a href="http://baidu.com"&gt;&lt;/a&gt; 
+</span><span class='line'>      &lt;a href="baidu.com"&gt;&lt;/a&gt; 
+</span><span class='line'>      &lt;span&gt;baidu&lt;/span&gt; 
+</span><span class='line'>      &lt;div&gt;hahahaha&lt;/div&gt; 
+</span><span class='line'>      &lt;font color="red"&gt;121&lt;/font&gt;';
+</span><span class='line'>
+</span><span class='line'>$pattern = '/&lt;[^a\/].*/i';
+</span><span class='line'>preg_match_all($pattern, $str, $matches);
+</span><span class='line'>
+</span><span class='line'>var_dump($matches);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>array(1) {
+</span><span class='line'>  [0]=&gt;
+</span><span class='line'>      array(3) {
+</span><span class='line'>          [0]=&gt;
+</span><span class='line'>          string(19) "&lt;span&gt;baidu&lt;/span&gt; "
+</span><span class='line'>          [1]=&gt;
+</span><span class='line'>          string(20) "&lt;div&gt;hahahaha&lt;/div&gt; "
+</span><span class='line'>          [2]=&gt;
+</span><span class='line'>          string(28) "&lt;font color="red"&gt;121&lt;/font&gt;"
+</span><span class='line'>      }
+</span><span class='line'>}
+</span><span class='line'>[Finished in 0.1s]</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>后向引用</h4>
+
+<p>后向引用用于重复搜索前面某个分组匹配的文本。例如，\1代表分组1匹配的文本，举例：</p>
+
+<p>从字符串中找出重复出现的单词</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$str = 'hello kit kit , let`s go to play basketball , go go go';
+</span><span class='line'>
+</span><span class='line'>$pattern = '/\b(\w+)\b\s+\1\b/i';
+</span><span class='line'>
+</span><span class='line'>preg_match_all($pattern, $str, $matches);
+</span><span class='line'>
+</span><span class='line'>var_dump($matches);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>array(2) {
+</span><span class='line'>  [0]=&gt;
+</span><span class='line'>      array(2) {
+</span><span class='line'>      [0]=&gt;
+</span><span class='line'>      string(7) "kit kit"
+</span><span class='line'>      [1]=&gt;
+</span><span class='line'>      string(5) "go go"
+</span><span class='line'>  }
+</span><span class='line'>  [1]=&gt;
+</span><span class='line'>      array(2) {
+</span><span class='line'>      [0]=&gt;
+</span><span class='line'>      string(3) "kit"
+</span><span class='line'>      [1]=&gt;
+</span><span class='line'>      string(2) "go"
+</span><span class='line'>  }
+</span><span class='line'>}
+</span><span class='line'>[Finished in 0.1s]</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>常用分组语法</h4>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">分类</th>
+<th style="text-align:center;">代码</th>
+<th style="text-align:center;">释义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">捕获 </td>
+<td style="text-align:center;">(exp) </td>
+<td style="text-align:center;">匹配exp,并捕获文本到自动命名的组里</td>
+</tr>
+<tr>
+<td style="text-align:center;">捕获 </td>
+<td style="text-align:center;">(?<name>exp) </td>
+<td style="text-align:center;">匹配exp,并捕获文本到名称为name的组里，也可以写成(?&lsquo;name'exp)</td>
+</tr>
+<tr>
+<td style="text-align:center;">捕获 </td>
+<td style="text-align:center;">(?:exp) </td>
+<td style="text-align:center;">匹配exp,不捕获匹配的文本，也不给此分组分配组号</td>
+</tr>
+</tbody>
+</table>
+
 ]]></content>
   </entry>
   

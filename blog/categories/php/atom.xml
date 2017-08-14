@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Php | 陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-08-14T17:00:25+08:00</updated>
+  <updated>2017-08-14T18:09:01+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -60,7 +60,7 @@ break可以接受一个可选的数字参数来决定跳出几重循环。</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center;">符号 </th>
+<th style="text-align:center;">代码 </th>
 <th style="text-align:center;"> 释义 </th>
 </tr>
 </thead>
@@ -102,7 +102,7 @@ break可以接受一个可选的数字参数来决定跳出几重循环。</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center;">符号 </th>
+<th style="text-align:center;">代码 </th>
 <th style="text-align:center;"> 释义 </th>
 </tr>
 </thead>
@@ -140,7 +140,7 @@ break可以接受一个可选的数字参数来决定跳出几重循环。</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center;">符号</th>
+<th style="text-align:center;">代码</th>
 <th style="text-align:center;">释义</th>
 </tr>
 </thead>
@@ -326,15 +326,157 @@ break可以接受一个可选的数字参数来决定跳出几重循环。</p>
 
 <p>注意 匹配分枝条件时，将会从左到右地测试每个条件，如果满足了某个分枝的话，就不会去再管其它的条件了。
 举例：
-```
-\d{5}-\d{4}|\d{5} //匹配类似 23843-3234 或 21234 美国邮编格式</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>\d{5}-\d{4}|\d{5} //匹配类似 23843-3234 或 21234 美国邮编格式&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;美国邮编的规则是5位数字，或者用连字号间隔的9位数字&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;如果你把它改成\d{5}|\d{5}-\d{4}的话，那么就只会匹配5位的邮编(以及9位邮编的前5位)。
+</span><span class='line'>
+</span><span class='line'>####取反义 
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;&lt;a[^&gt;]+&gt;
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>匹配用尖括号括起来的以a开头的字符串。
+</span><span class='line'>匹配以 除 a 标签以外的标签
+</span><span class='line'>&lt;/code&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;匹配以 除 a 标签以外的元素&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;$str = &lsquo;&lt;a&gt;baidu&lt;/a&gt;
+</span><span class='line'>        &lt;a href="http://baidu.com"&gt;&lt;/a&gt;
+</span><span class='line'>        &lt;a href="baidu.com"&gt;&lt;/a&gt;
+</span><span class='line'>        &lt;span&gt;baidu&lt;/span&gt;
+</span><span class='line'>        &lt;div&gt;hahahaha&lt;/div&gt;
+</span><span class='line'>        &lt;font color="red"&gt;121&lt;/font&gt;&rsquo;;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;$pattern = &lsquo;/&lt;[^a\/].*/i&rsquo;;
+</span><span class='line'>preg_match_all($pattern, $str, $matches);&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;var_dump($matches);
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>输出：
+</span><span class='line'>&lt;/code&gt;
+</span><span class='line'>array(1) {
+</span><span class='line'>    [0]=&gt;
+</span><span class='line'>        array(3) {
+</span><span class='line'>            [0]=&gt;
+</span><span class='line'>            string(19) &ldquo;&lt;span&gt;baidu&lt;/span&gt; &rdquo;
+</span><span class='line'>            [1]=&gt;
+</span><span class='line'>            string(20) &ldquo;&lt;div&gt;hahahaha&lt;/div&gt; &rdquo;
+</span><span class='line'>            [2]=&gt;
+</span><span class='line'>            string(28) &ldquo;&lt;font color="red"&gt;121&lt;/font&gt;&rdquo;
+</span><span class='line'>        }
+</span><span class='line'>}
+</span><span class='line'>[Finished in 0.1s]</span></code></pre></td></tr></table></div></figure></p>
 
-<h1>美国邮编的规则是5位数字，或者用连字号间隔的9位数字</h1>
+<h4>后向引用</h4>
 
-<p>```
-如果你把它改成\d{5}|\d{5}-\d{4}的话，那么就只会匹配5位的邮编(以及9位邮编的前5位)。</p>
+<p>后向引用用于重复搜索前面某个分组匹配的文本。例如，\1代表分组1匹配的文本，举例：</p>
 
-<p>取反义实例：</p>
+<p>从字符串中找出重复出现的单词
+<code>``
+$str = 'hello kit kit , let</code>s go to play basketball , go go go';</p>
+
+<p>$pattern = &lsquo;/\b(\w+)\b\s+\1\b/i&rsquo;;</p>
+
+<p>preg_match_all($pattern, $str, $matches);</p>
+
+<p>var_dump($matches);
+<code>
+输出：
+</code>
+array(2) {
+    [0]=>
+        array(2) {
+        [0]=>
+        string(7) &ldquo;kit kit&rdquo;
+        [1]=>
+        string(5) &ldquo;go go&rdquo;
+    }
+    [1]=>
+        array(2) {
+        [0]=>
+        string(3) &ldquo;kit&rdquo;
+        [1]=>
+        string(2) &ldquo;go&rdquo;
+    }
+}
+[Finished in 0.1s]
+```</p>
+
+<h4>常用分组语法</h4>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">分类</th>
+<th style="text-align:center;">代码</th>
+<th style="text-align:center;">释义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">捕获 </td>
+<td style="text-align:center;">(exp) </td>
+<td style="text-align:center;">匹配exp,并捕获文本到自动命名的组里</td>
+</tr>
+<tr>
+<td style="text-align:center;">捕获 </td>
+<td style="text-align:center;">(?<name>exp) </td>
+<td style="text-align:center;">匹配exp,并捕获文本到名称为name的组里，也可以写成(?&lsquo;name'exp)</td>
+</tr>
+<tr>
+<td style="text-align:center;">捕获 </td>
+<td style="text-align:center;">(?:exp) </td>
+<td style="text-align:center;">匹配exp,不捕获匹配的文本，也不给此分组分配组号</td>
+</tr>
+</tbody>
+</table>
+
 ]]></content>
   </entry>
   
