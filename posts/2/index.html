@@ -832,6 +832,321 @@ rpm -ql yum-cron
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/01/12/regex/">Regex（正则）入门</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2012-01-12T10:39:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>10:39 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h4>1，元字符</h4>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">符号 </th>
+<th style="text-align:center;"> 释义 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">   .  </td>
+<td style="text-align:center;">匹配除换行符以外的任意字符</td>
+</tr>
+<tr>
+<td style="text-align:center;">   \w </td>
+<td style="text-align:center;">匹配字母或数字或下划线或汉字</td>
+</tr>
+<tr>
+<td style="text-align:center;">   \s </td>
+<td style="text-align:center;">匹配任意空白符</td>
+</tr>
+<tr>
+<td style="text-align:center;">   \d </td>
+<td style="text-align:center;">匹配数字</td>
+</tr>
+<tr>
+<td style="text-align:center;">   \b </td>
+<td style="text-align:center;">匹配单词的开始或结束</td>
+</tr>
+<tr>
+<td style="text-align:center;">   ^  </td>
+<td style="text-align:center;">匹配字符串的开始</td>
+</tr>
+<tr>
+<td style="text-align:center;">   $  </td>
+<td style="text-align:center;">匹配字符串的结束</td>
+</tr>
+</tbody>
+</table>
+
+
+<h4>2，重复</h4>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">符号 </th>
+<th style="text-align:center;"> 释义 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">   *     </td>
+<td style="text-align:center;">重复零次或更多次</td>
+</tr>
+<tr>
+<td style="text-align:center;">   +     </td>
+<td style="text-align:center;">重复一次或更多次</td>
+</tr>
+<tr>
+<td style="text-align:center;">   ?     </td>
+<td style="text-align:center;">重复零次或一次</td>
+</tr>
+<tr>
+<td style="text-align:center;">   {n}   </td>
+<td style="text-align:center;">重复 n 次</td>
+</tr>
+<tr>
+<td style="text-align:center;">   {n,}  </td>
+<td style="text-align:center;">重复 n 次或更多次</td>
+</tr>
+<tr>
+<td style="text-align:center;">   {n,m} </td>
+<td style="text-align:center;">重复 n 次到 m 次</td>
+</tr>
+</tbody>
+</table>
+
+
+<h4>3，常用的反义</h4>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">符号</th>
+<th style="text-align:center;">释义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">   \W </td>
+<td style="text-align:center;"> 匹配任意不是字母，数字，下划线，汉字的字符 </td>
+</tr>
+<tr>
+<td style="text-align:center;">   \S </td>
+<td style="text-align:center;">匹配任意不是空白符的字符</td>
+</tr>
+<tr>
+<td style="text-align:center;">   \D </td>
+<td style="text-align:center;">匹配任意非数字的字符</td>
+</tr>
+<tr>
+<td style="text-align:center;">   \B </td>
+<td style="text-align:center;">匹配不是单词开头或结束的位置</td>
+</tr>
+<tr>
+<td style="text-align:center;">   [^x] </td>
+<td style="text-align:center;">匹配除了x以外的任意字符</td>
+</tr>
+<tr>
+<td style="text-align:center;">   [^aeiou] </td>
+<td style="text-align:center;">匹配除了aeiou这几个字母以外的任意字符</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>练习1 验证$eamil的合法性</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$email = array('444371889@qq.com','1212121212.com','hahahaha','Asw@zj.gov.cn','Asw@zj.info');
+</span><span class='line'>
+</span><span class='line'>$pattern = '/^[a-z0-9_]+@(?:[a-z0-9_-]+\.)+(?:com|cn)/i'; // （exp）匹配并捕获 （?:exp）匹配
+</span><span class='line'>
+</span><span class='line'>foreach ($email as $key =&gt; $value) {
+</span><span class='line'>  if(preg_match($pattern, $value)){
+</span><span class='line'>      echo $value , ' pass' , PHP_EOL;
+</span><span class='line'>  }else{
+</span><span class='line'>      echo $value , ' fail' , PHP_EOL;
+</span><span class='line'>  }
+</span><span class='line'>  //preg_match($pattern, $value , $RESULT[$key]);
+</span><span class='line'>}
+</span><span class='line'>var_dump($RESULT);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>444371889@qq.com pass
+</span><span class='line'>1212121212.com fail
+</span><span class='line'>hahahaha fail
+</span><span class='line'>Asw@zj.gov.cn pass
+</span><span class='line'>Asw@zj.info fail</span></code></pre></td></tr></table></div></figure>
+
+
+<p>练习2 匹配出正确的时间</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$str = "
+</span><span class='line'>13:00
+</span><span class='line'>212:36w ww22:48kl
+</span><span class='line'>4:32  这样的时间应该是正确的
+</span><span class='line'>22:00
+</span><span class='line'>23:59
+</span><span class='line'>22:61
+</span><span class='line'>1112:13 非法
+</span><span class='line'>43:33 非法
+</span><span class='line'>12:60
+</span><span class='line'>12:33
+</span><span class='line'>000:34
+</span><span class='line'>00:00
+</span><span class='line'>23:59
+</span><span class='line'>24:59 显然没有这样的时间
+</span><span class='line'>24:00
+</span><span class='line'>30
+</span><span class='line'>";
+</span><span class='line'>
+</span><span class='line'>$pattern = '/[0-2]{1}[0-3]{1}:[0-5]{1}[0-9]{1}/';
+</span><span class='line'>
+</span><span class='line'>preg_match_all($pattern, $str , $res);
+</span><span class='line'>
+</span><span class='line'>var_dump($res);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>array(1) {
+</span><span class='line'>  [0]=&gt;
+</span><span class='line'>  array(10) {
+</span><span class='line'>      [0]=&gt;
+</span><span class='line'>      string(5) "13:00"
+</span><span class='line'>      [1]=&gt;
+</span><span class='line'>      string(5) "12:36"
+</span><span class='line'>      [2]=&gt;
+</span><span class='line'>      string(5) "22:48"
+</span><span class='line'>      [3]=&gt;
+</span><span class='line'>      string(5) "22:00"
+</span><span class='line'>      [4]=&gt;
+</span><span class='line'>      string(5) "23:59"
+</span><span class='line'>      [5]=&gt;
+</span><span class='line'>      string(5) "12:13"
+</span><span class='line'>      [6]=&gt;
+</span><span class='line'>      string(5) "12:33"
+</span><span class='line'>      [7]=&gt;
+</span><span class='line'>      string(5) "00:34"
+</span><span class='line'>      [8]=&gt;
+</span><span class='line'>      string(5) "00:00"
+</span><span class='line'>      [9]=&gt;
+</span><span class='line'>      string(5) "23:59"
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可是我们并没有 &ldquo;4:32  这样的时间应该是正确的&rdquo; 这个正确的时间
+是时候用到分支了</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$pattern = '/[0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}|[0-9]{1}:[0-5]{1}[0-9]{1}/';</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意 匹配分枝条件时，将会从左到右地测试每个条件，如果满足了某个分枝的话，就不会去再管其它的条件了。
+举例：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>\d{5}-\d{4}|\d{5} //匹配类似 23843-3234 或 21234 美国邮编格式 
+</span><span class='line'>#美国邮编的规则是5位数字，或者用连字号间隔的9位数字</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你把它改成\d{5}|\d{5}-\d{4}的话，那么就只会匹配5位的邮编(以及9位邮编的前5位)。</p>
+
+<p>取反义实例：</p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
     <a href="/blog/archives">Blog Archives</a>
