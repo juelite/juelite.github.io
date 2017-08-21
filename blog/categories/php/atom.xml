@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Php | 陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/blog/categories/php/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-08-21T17:42:50+08:00</updated>
+  <updated>2017-08-21T17:44:52+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -24,8 +24,11 @@
 
 <h3>红包何时拆？</h3>
 
-<p>1，发起者点击发送后，预先拆好红包
-2，由抢红包用户触发，抢一个计算一个金额</p>
+<ol>
+<li>发起者点击发送后，预先拆好红包</li>
+<li>由抢红包用户触发，抢一个计算一个金额</li>
+</ol>
+
 
 <p>如果由用户来触发拆红包，当拆红包请求达到一个量级的时候，可能会对服务器造成比较大的压力，所以我们在发起者发送完红包后直接计算好红包分数及对应的金额，用户抢红包请求到达，直接赋值，无需计算</p>
 
