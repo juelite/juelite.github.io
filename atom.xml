@@ -4,7 +4,7 @@
   <title><![CDATA[陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-08-14T18:13:32+08:00</updated>
+  <updated>2017-08-21T17:42:50+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -12,6 +12,110 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[微信抢红包实现]]></title>
+    <link href="http://juelite.github.io/blog/2017/08/21/qianghongbao-jiandanshixian/"/>
+    <updated>2017-08-21T17:29:38+08:00</updated>
+    <id>http://juelite.github.io/blog/2017/08/21/qianghongbao-jiandanshixian</id>
+    <content type="html"><![CDATA[<h3>简单流程</h3>
+
+<p><img src="http://juelite.github.io/images/WX20170821-173238@2x.png" alt="understand-mysql-charset" /></p>
+
+<h3>红包何时拆？</h3>
+
+<p>1，发起者点击发送后，预先拆好红包
+2，由抢红包用户触发，抢一个计算一个金额</p>
+
+<p>如果由用户来触发拆红包，当拆红包请求达到一个量级的时候，可能会对服务器造成比较大的压力，所以我们在发起者发送完红包后直接计算好红包分数及对应的金额，用户抢红包请求到达，直接赋值，无需计算</p>
+
+<h3>发起红包时拆分，将红包拆分好入栈，简单递归下</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$count = 3; //3个红包
+</span><span class='line'>
+</span><span class='line'>$sum = 100; //100元
+</span><span class='line'>
+</span><span class='line'>$current = array();
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>function do_split($sum , $cnt){
+</span><span class='line'>    global $current;
+</span><span class='line'>    if($cnt === 1){
+</span><span class='line'>        $current[] = $sum;
+</span><span class='line'>    }else{
+</span><span class='line'>        $ld = 0.01;
+</span><span class='line'>        $total = $sum / $ld;
+</span><span class='line'>        $max = round($total / $cnt);
+</span><span class='line'>        $min = 1;
+</span><span class='line'>        $currWhide = rand($min , 2 * $max);
+</span><span class='line'>        $current[] = $jqje = $currWhide * $ld;
+</span><span class='line'>        $syje = $sum - $jqje;
+</span><span class='line'>        do_split( $syje , $cnt - 1);
+</span><span class='line'>    }
+</span><span class='line'>    
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>do_split($sum , $count);
+</span><span class='line'>
+</span><span class='line'>var_dump($current);
+</span><span class='line'>
+</span><span class='line'>foreach ($current as $key =&gt; $value) {
+</span><span class='line'>    $redis-&gt;lpush('hongbao1',$value);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>用户抢红包</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$uid = $_GET['uid'];
+</span><span class='line'>$je = $redis-&gt;lpop('hongbao1');
+</span><span class='line'>if($je &gt; 0){
+</span><span class='line'>    echo '恭喜'.$uid.'您抢到'.$je.'元';
+</span><span class='line'>}else{
+</span><span class='line'>    echo $uid.'您的手也太慢了吧！';
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Shell History 命令扩展]]></title>
