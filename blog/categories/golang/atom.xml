@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Golang | 陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/blog/categories/golang/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-05T11:55:43+08:00</updated>
+  <updated>2017-09-05T11:57:51+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[微信抢红包实现]]></title>
+    <title type="html"><![CDATA[Golang Printf Type]]></title>
     <link href="http://juelite.github.io/blog/2017/08/29/golang-printf-type/"/>
     <updated>2017-08-29T16:04:14+08:00</updated>
     <id>http://juelite.github.io/blog/2017/08/29/golang-printf-type</id>
