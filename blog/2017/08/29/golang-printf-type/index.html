@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <script async="false" src="/javascripts/libs/jquery.min.js"></script>
+  <title>微信抢红包实现 - 陌上花开 可缓缓归矣</title>
+  <meta name="author" content="juelite">
+  
+  <meta name="description" content="符号 注释 %d int变量 %x, %o, %b 分别为16进制，8进制，2进制形式的int %f, %g, %e 浮点数： 3.141593 3.141592653589793 3.141593e+00 %t 布尔变量：true 或 false %c rune (Unicode码点)， &hellip;">
+  
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="canonical" href="http://juelite.github.io/blog/2017/08/29/golang-printf-type">
+  <link href="/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="陌上花开 可缓缓归矣" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts --><!-- 
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+  <!-- 
+ -->
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">陌上花开 可缓缓归矣</a></h1>
+  
+    <h2>若我白发苍苍，容颜迟暮，你会不会，依旧如此，牵我双手，倾世温柔</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:juelite.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">微信抢红包实现</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-08-29T16:04:14+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>4:04 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><table>
+<thead>
+<tr>
+<th style="text-align:center;">符号 </th>
+<th style="text-align:left;"> 注释 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">%d          </td>
+<td style="text-align:left;">int变量</td>
+</tr>
+<tr>
+<td style="text-align:center;">%x, %o, %b  </td>
+<td style="text-align:left;">分别为16进制，8进制，2进制形式的int</td>
+</tr>
+<tr>
+<td style="text-align:center;">%f, %g, %e  </td>
+<td style="text-align:left;">浮点数： 3.141593 3.141592653589793 3.141593e+00</td>
+</tr>
+<tr>
+<td style="text-align:center;">%t          </td>
+<td style="text-align:left;">布尔变量：true 或 false</td>
+</tr>
+<tr>
+<td style="text-align:center;">%c          </td>
+<td style="text-align:left;">rune (Unicode码点)，Go语言里特有的Unicode字符类型</td>
+</tr>
+<tr>
+<td style="text-align:center;">%s          </td>
+<td style="text-align:left;">string</td>
+</tr>
+<tr>
+<td style="text-align:center;">%q          </td>
+<td style="text-align:left;">带双引号的字符串 &ldquo;abc&rdquo; 或 带单引号的 rune &lsquo;c&rsquo;</td>
+</tr>
+<tr>
+<td style="text-align:center;">%v          </td>
+<td style="text-align:left;">会将任意变量以易读的形式打印出来</td>
+</tr>
+<tr>
+<td style="text-align:center;">%T          </td>
+<td style="text-align:left;">打印变量的类型</td>
+</tr>
+<tr>
+<td style="text-align:center;">%%          </td>
+<td style="text-align:left;">字符型百分比标志（%符号本身，没有其他操作）</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">juelite</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-08-29T16:04:14+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>4:04 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/format/'>format</a>, <a class='category' href='/blog/categories/go/'>go</a>, <a class='category' href='/blog/categories/golang/'>golang</a>, <a class='category' href='/blog/categories/printf/'>printf</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/08/21/qianghongbao-jiandanshixian/" title="Previous Post: 微信抢红包实现">&laquo; 微信抢红包实现</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/08/29/golang-printf-type/">微信抢红包实现</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/08/21/qianghongbao-jiandanshixian/">微信抢红包实现</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/08/10/shell-history/">Shell History 命令扩展</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/05/07/windows-xia-ffmpegshi-yong/">Ffmpeg使用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/08/11/gperftools-profile-nginx-mysql-memory/">Gperftools优化nginx和mysql的内存分配</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - juelite -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?eaf99bb75dc6ffe41f3a01f12eb5a980";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
