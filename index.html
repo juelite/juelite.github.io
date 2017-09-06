@@ -9,7 +9,13 @@
   <title>陌上花开 可缓缓归矣</title>
   <meta name="author" content="juelite">
   
-  <meta name="description" content="符号 注释 %d int变量 %x, %o, %b 分别为16进制，8进制，2进制形式的int %f, %g, %e 浮点数： 3.141593 3.141592653589793 3.141593e+00 %t 布尔变量：true 或 false %c rune (Unicode码点)， &hellip;">
+  <meta name="description" content="1
+2
+3
+4
+5
+[Illuminate\Database\QueryException]
+SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is &hellip;">
   
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
@@ -60,6 +66,83 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/">Laravel 5.4 Migrate error:Specified Key Was Too Long Error</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-09-06T09:52:28+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>9:52 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[Illuminate\Database\QueryException]
+</span><span class='line'>SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes (SQL: alter table users add unique users_email_unique(email))
+</span><span class='line'>
+</span><span class='line'>[PDOException]
+</span><span class='line'>SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>问题根源</h3>
+
+<p>MySql支持的utf8编码最大字符长度为3字节，如果遇到4字节的宽字符就会出现插入异常。三个字节UTF-8最大能编码的Unicode字符是0xffff，即Unicode中的基本多文种平面（BMP）。因而包括Emoji表情（Emoji是一种特殊的Unicode编码）在内的非基本多文种平面的Unicode字符都无法使用MySql的utf8字符集存储。</p>
+
+<p>这也应该就是Laravel 5.4改用4字节长度的utf8mb4字符编码的原因之一。不过要注意的是，只有MySql 5.5.3版本以后才开始支持utf8mb4字符编码（查看版本：selection version();）。如果MySql版本过低，需要进行版本更新。</p>
+
+<p>注：如果是从Laravel 5.3升级到Laravel 5.4，不需要对字符编码做切换。</p>
+
+<h3>解决问题</h3>
+
+<p>1.升级MySql版本到5.5.3以上。
+2.手动配置迁移命令migrate生成的默认字符串长度，在AppServiceProvider中调用Schema::defaultStringLength方法来实现配置：
+文件位置：/Users/wy/Documents/www/news.local.com/app/Providers/AppServiceProvider.php</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>use Illuminate\Support\Facades\Schema;
+</span><span class='line'>
+</span><span class='line'>/**
+</span><span class='line'>* Bootstrap any application services.
+</span><span class='line'>*
+</span><span class='line'>* @return void
+</span><span class='line'>*/
+</span><span class='line'>public function boot()
+</span><span class='line'>{
+</span><span class='line'>   Schema::defaultStringLength(191);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1101,103 +1184,6 @@ HTML 5
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/31/linux-useful-command/">Linux-有用的命令</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-31T18:57:18+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>6:57 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>下面我将和大家分享一些学习Linux命令行的技巧，希望能对大家有所助益。如果在本文中遇到不太熟悉的命令，可以在终端中键入以下命令寻求帮助。
-Man <command>
- Linux入门必备
-了解bash：没有必要钻研长篇累牍的bash使用手册，通过man bash学习即可。
-了解vi：你在工作中也许会使用Emacs或Eclipse，但vi不可替代。
-了解ssh：学习无密码验证的基础知识。
-bash作业管理基础知识：如使用&amp;、Ctrl-C、fg、bg、Ctrl-Z、jobs和kill等。
-文件管理命令：如硬链接和软链接，权限等。
-网络管理命令：如ifconfig等。
-如何使用正则表达式，如何使用grep、sed等。
-学习使用apt-get和yum管理软件包。
-提升日常工作效率</p>
-
-<p>在bash中，可以使用Ctrl+R命令搜索命令行历史记录。
-在bash中，可以使用Ctrl+W删除最后一个单词，使用Ctrl+U删除整行。
-使用cd -命令返回之前的工作目录，使用cd ..命令返回上层目录。
-学习如何使用xargs：
-$ find . -name *.py | xargs grep some_function<br/>
-$ cat hosts | xargs -I{} ssh root@{} hostnameX
-使用pstree -p命令查看进程树。
-了解不同的信号。例如，使用kill -STOP [PID]终止进程。详细的信号列表可以在man 7 signal中查看。
-如果你想让进程永远在后台运行，可以使用nohup和disown命令。
-使用netstat -lntp命令查看侦听进程，并参考lsof命令。
-在bash脚本中使用subshells对命令进行分组：</p>
-
-<h1>do something in current dir</h1>
-
-<p>(cd /some/other/dir; other-command)</p>
-
-<h1>continue in original dir</h1>
-
-<p>字符串修剪（Trimming Strings）：${var%suffix}和${var#prefix}。例如if var=foo.pdf then echo ${var%.pdf}.txt prints &ldquo;foo.txt"。
-命令的输出可以当做文件使用。例如，比较本地和远程的/etc/hosts文件：
-diff /etc/hosts &lt;(ssh somehost cat /etc/hosts)
-了解bash中的“here documents”。
-了解标准输出和标准错误重定向。
-了解ASCII代码表。可以在终端中运行man ascii命令作为参考。
-当通过ssh远程工作时，可以使用screen 或 dtach保存回话。
-对Web开发者而言，curl、wget等命令非常实用。
-将HTML页面转化文本文件：
-lynx -dump -stdin
-如果要掌握XML，xmlstarlet命令是非常好的工具。
-了解ssh端口映射。
-使用Alt+shift+3快捷键可以在行前添加注释“#”。
-数据处理</p>
-
-<p>了解sort和uniq命令。
-了解cut、paste和join命令。
-了解如何对文本文件做交集、并集和差集：
-cat a b | sort | uniq > c # c is a union b<br/>
-cat a b | sort | uniq -d > c # c is a intersect b<br/>
-cat a b b | sort | uniq -u > c # c is set difference a – b
-对文本文件的第二列做摘要，下面的代码要比同样的Python代码更精炼、快速（3倍）：
-awk &lsquo;{ x += $2 } END { print x }&rsquo;
-了解字符串和grep命令。
-文件分割：了解split（按大小分割）和csplit（按匹配分割）命令。
-系统诊断</p>
-
-<p>使用iostat、netstat、top和dstat命令查看磁盘、处理器和网络的状态。
-使用free、vmstat等命令了解系统内存状态。
-使用mtr网络诊断工具。
-使用iftop、nethogs等工具查看占用带宽的进程和带宽。
-使用ab工具快速洞悉Web服务器的性能。
-以wireshark和tshark命令应对复杂网络诊断。
-学习如何使用strace，并用于诊断运行的进程。这对分析程序运行错误的原因，非常有帮助。
-使用ldd命令查看共享库文件。
-了解如何使用gdb连接到运行中的进程，并进行堆栈跟踪。
-有关/proc的知识非常重要。
-如何诊断已发生的错误？Sar命令是一种很好的选择，它可以收集、保存并报告系统信息。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1213,6 +1199,10 @@ awk &lsquo;{ x += $2 } END { print x }&rsquo;
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/">Laravel 5.4 Migrate error:Specified Key Was Too Long Error</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2017/08/29/golang-printf-type/">Golang Printf Type</a>
       </li>
     
@@ -1226,10 +1216,6 @@ awk &lsquo;{ x += $2 } END { print x }&rsquo;
     
       <li class="post">
         <a href="/blog/2017/05/07/windows-xia-ffmpegshi-yong/">Ffmpeg使用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/11/gperftools-profile-nginx-mysql-memory/">Gperftools优化nginx和mysql的内存分配</a>
       </li>
     
   </ul>
