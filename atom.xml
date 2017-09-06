@@ -4,7 +4,7 @@
   <title><![CDATA[陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-06T09:57:29+08:00</updated>
+  <updated>2017-09-06T10:02:07+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -23,11 +23,15 @@
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>[Illuminate\Database\QueryException]
-</span><span class='line'>SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes (SQL: alter table users add unique users_email_unique(email))
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[Illuminate\Database\QueryException]                                                                                                                                                 
+</span><span class='line'>  SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes (SQL: alter table `users` add unique `users_email_unique`(`email`))  
+</span><span class='line'>                                                                                                                                                                                       
 </span><span class='line'>
-</span><span class='line'>[PDOException]
-</span><span class='line'>SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>                                                                                                                   
+</span><span class='line'>  [PDOException]                                                                                                   
+</span><span class='line'>  SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes </span></code></pre></td></tr></table></div></figure>
 
 
 <h3>问题根源</h3>

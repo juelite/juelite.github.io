@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Utf8mb4 | 陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/blog/categories/utf8mb4/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-06T09:57:29+08:00</updated>
+  <updated>2017-09-06T10:02:07+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[juelite]]></name>
@@ -18,11 +18,13 @@
     <link href="http://juelite.github.io/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/"/>
     <updated>2017-09-06T09:52:28+08:00</updated>
     <id>http://juelite.github.io/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error</id>
-    <content type="html"><![CDATA[<pre><code>[Illuminate\Database\QueryException]
-SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes (SQL: alter table users add unique users_email_unique(email))
+    <content type="html"><![CDATA[<pre><code>[Illuminate\Database\QueryException]                                                                                                                                                 
+  SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes (SQL: alter table `users` add unique `users_email_unique`(`email`))  
 
-[PDOException]
-SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes
+
+
+  [PDOException]                                                                                                   
+  SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes 
 </code></pre>
 
 <h3>问题根源</h3>
