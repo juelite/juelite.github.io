@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Computer | 陌上花开 可缓缓归矣]]></title>
+  <title><![CDATA[Category: computer | 陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/blog/categories/computer/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-07T17:28:28+08:00</updated>
+  <updated>2017-09-07T17:56:25+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[king]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Htop是个好东西]]></title>
+    <title type="html"><![CDATA[htop是个好东西]]></title>
     <link href="http://juelite.github.io/blog/2015/01/06/htop/"/>
     <updated>2015-01-06T13:49:16+08:00</updated>
     <id>http://juelite.github.io/blog/2015/01/06/htop</id>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Utf8mb4 | 陌上花开 可缓缓归矣]]></title>
+  <title><![CDATA[Category: utf8mb4 | 陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/blog/categories/utf8mb4/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-07T17:28:28+08:00</updated>
+  <updated>2017-09-07T17:56:25+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[king]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Laravel 5.4 Migrate error:Specified Key Was Too Long Error]]></title>
+    <title type="html"><![CDATA[Laravel 5.4 migrate error:Specified key was too long error]]></title>
     <link href="http://juelite.github.io/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/"/>
     <updated>2017-09-06T09:52:28+08:00</updated>
     <id>http://juelite.github.io/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error</id>

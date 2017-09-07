@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Format | 陌上花开 可缓缓归矣]]></title>
+  <title><![CDATA[Category: format | 陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/blog/categories/format/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-07T17:28:28+08:00</updated>
+  <updated>2017-09-07T17:56:25+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[king]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Golang Printf Type]]></title>
+    <title type="html"><![CDATA[golang printf type]]></title>
     <link href="http://juelite.github.io/blog/2017/08/29/golang-printf-type/"/>
     <updated>2017-08-29T16:04:14+08:00</updated>
     <id>http://juelite.github.io/blog/2017/08/29/golang-printf-type</id>

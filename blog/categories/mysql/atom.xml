@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Mysql | 陌上花开 可缓缓归矣]]></title>
+  <title><![CDATA[Category: mysql | 陌上花开 可缓缓归矣]]></title>
   <link href="http://juelite.github.io/blog/categories/mysql/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-07T17:28:28+08:00</updated>
+  <updated>2017-09-07T17:56:25+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[king]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Laravel 5.4 Migrate error:Specified Key Was Too Long Error]]></title>
+    <title type="html"><![CDATA[Laravel 5.4 migrate error:Specified key was too long error]]></title>
     <link href="http://juelite.github.io/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/"/>
     <updated>2017-09-06T09:52:28+08:00</updated>
     <id>http://juelite.github.io/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error</id>
@@ -66,7 +66,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Gperftools优化nginx和mysql的内存分配]]></title>
+    <title type="html"><![CDATA[gperftools优化nginx和mysql的内存分配]]></title>
     <link href="http://juelite.github.io/blog/2015/08/11/gperftools-profile-nginx-mysql-memory/"/>
     <updated>2015-08-11T12:23:38+08:00</updated>
     <id>http://juelite.github.io/blog/2015/08/11/gperftools-profile-nginx-mysql-memory</id>
@@ -143,7 +143,7 @@ chmod 0777 /tmp/tcmalloc</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[MySQL 的 Prompt 转义字符]]></title>
+    <title type="html"><![CDATA[MySQL 的 prompt 转义字符]]></title>
     <link href="http://juelite.github.io/blog/2014/10/19/mysql-shell-prompt-metachar/"/>
     <updated>2014-10-19T10:53:38+08:00</updated>
     <id>http://juelite.github.io/blog/2014/10/19/mysql-shell-prompt-metachar</id>
