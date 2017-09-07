@@ -6,20 +6,17 @@
 <head>
   <meta charset="utf-8">
   <script async="false" src="/javascripts/libs/jquery.min.js"></script>
-  <title>陌上花开 可缓缓归矣</title>
+  <title>All Posts - 陌上花开 可缓缓归矣</title>
   <meta name="author" content="juelite">
   
-  <meta name="description" content="1，元字符 . 匹配除换行符以外的任意字符
-\w 匹配字母或数字或下划线或汉字
-\s 匹配任意空白符
-\d 匹配数字
-\b 匹配单词的开始或结束
-^ 匹配字符串的开始
-$ 匹配字符串的结束 2，重复 * 重复零次或更多次
-+ 重复一次或更多次
-? 重复零次或一次
-\{n\} 重复 n 次
-\{n &hellip;">
+  <meta name="description" content="All Posts Laravel 5.4 Migrate error:Specified Key Was Too Long Error 1
+2
+3
+4
+5
+6
+7
+[Illuminate\Database\QueryException] SQLSTATE[42000]: Syntax &hellip;">
   
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
@@ -31,10 +28,7 @@ $ 匹配字符串的结束 2，重复 * 重复零次或更多次
   <link href="/atom.xml" rel="alternate" title="陌上花开 可缓缓归矣" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts --><!-- 
-<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
-
+  
   <!-- 
  -->
 </head>
@@ -61,38 +55,3124 @@ $ 匹配字符串的结束 2，重复 * 重复零次或更多次
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/">Blog[首页]</a></li>
+  <li><a href="/blog/archives">Archives[归档]</a></li>
+  <li><a href="/about-me">About-Me[关于]</a></li>
 </ul>
 
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
+      <div class="all-posts">
+  <div class="container">
+    <div class="row">
+      <div class="list-title col-md-offset-2 col-md-8">
+        <h4>All Posts</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="article-list">
+    <div class="container">
       
-  <header>
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/">Laravel 5.4 Migrate error:Specified Key Was Too Long Error</a></h2>
+  
+  <p>
+    <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[Illuminate\Database\QueryException]                                                                                                                                                 
+</span><span class='line'>  SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes (SQL: alter table `users` add unique `users_email_unique`(`email`))  
+</span><span class='line'>                                                                                                                                                                                       
+</span><span class='line'>
+</span><span class='line'>                                                                                                                   
+</span><span class='line'>  [PDOException]                                                                                                   
+</span><span class='line'>  SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes </span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3>问题根源</h3>
+
+
+
+
+<p>MySql支持的utf8编码最大字符长度为3字节，如果遇到4字节的宽字符就会出现插入异常。三个字节UTF-8最大能编码的Unicode字符是0xffff，即Unicode中的基本多文种平面（BMP）。因而包括Emoji表情（Emoji是一种特殊的Unicode编码）在内的非基本多文种平面的Unicode字符都无法使用MySql的utf8字符集存储。</p>
+
+
+
+
+<p>这也应该就是Laravel 5.4改用4字节长度的utf8mb4字符编码的原因之一。不过要注意的是，只有MySql 5.5.3版本以后才开始支持utf8mb4字符编码（查看版本：selection version();）。如果MySql版本过低，需要进行版本更新。</p>
+
+
+
+
+<p>注：如果是从Laravel 5.3升级到Laravel 5.4，不需要对字符编码做切换。</p>
+
+
+
+
+<h3>解决问题</h3>
+
+
+
+
+<p>1.升级MySql版本到5.5.3以上。
+2.手动配置迁移命令migrate生成的默认字符串长度，在AppServiceProvider中调用Schema::defaultStringLength方法来实现配置：
+文件位置：/Users/wy/Documents/www/news.local.com/app/Providers/AppServiceProvider.php</p>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>use Illuminate\Support\Facades\Schema;
+</span><span class='line'>
+</span><span class='line'>/**
+</span><span class='line'>* Bootstrap any application services.
+</span><span class='line'>*
+</span><span class='line'>* @return void
+</span><span class='line'>*/
+</span><span class='line'>public function boot()
+</span><span class='line'>{
+</span><span class='line'>   Schema::defaultStringLength(191);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+  </p>
+  <span class="meta">
     
-      <h1 class="entry-title"><a href="/blog/2012/01/12/regex/">Regex（正则）入门</a></h1>
+
+
+
+
+<time class='entry-date' datetime='2017-09-06T09:52:28+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>9:52 am</span></time>
     
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/laravel/'>laravel</a>, <a class='category' href='/blog/categories/migrate/'>migrate</a>, <a class='category' href='/blog/categories/mysql/'>mysql</a>, <a class='category' href='/blog/categories/utf8mb4/'>utf8mb4</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2017/08/29/golang-printf-type/">Golang Printf Type</a></h2>
+  
+  <p>
+    <table>
+<thead>
+<tr>
+<th style="text-align:center;">符号 </th>
+<th style="text-align:left;"> 注释 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">%d          </td>
+<td style="text-align:left;">int变量</td>
+</tr>
+<tr>
+<td style="text-align:center;">%x, %o, %b  </td>
+<td style="text-align:left;">分别为16进制，8进制，2进制形式的int</td>
+</tr>
+<tr>
+<td style="text-align:center;">%f, %g, %e  </td>
+<td style="text-align:left;">浮点数： 3.141593 3.141592653589793 3.141593e+00</td>
+</tr>
+<tr>
+<td style="text-align:center;">%t          </td>
+<td style="text-align:left;">布尔变量：true 或 false</td>
+</tr>
+<tr>
+<td style="text-align:center;">%c          </td>
+<td style="text-align:left;">rune (Unicode码点)，Go语言里特有的Unicode字符类型</td>
+</tr>
+<tr>
+<td style="text-align:center;">%s          </td>
+<td style="text-align:left;">string</td>
+</tr>
+<tr>
+<td style="text-align:center;">%q          </td>
+<td style="text-align:left;">带双引号的字符串 &ldquo;abc&rdquo; 或 带单引号的 rune &lsquo;c&rsquo;</td>
+</tr>
+<tr>
+<td style="text-align:center;">%v          </td>
+<td style="text-align:left;">会将任意变量以易读的形式打印出来</td>
+</tr>
+<tr>
+<td style="text-align:center;">%T          </td>
+<td style="text-align:left;">打印变量的类型</td>
+</tr>
+<tr>
+<td style="text-align:center;">%%          </td>
+<td style="text-align:left;">字符型百分比标志（%符号本身，没有其他操作）</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+  </p>
+  <span class="meta">
     
-      <p class="meta">
-        
 
 
 
 
-<time class='entry-date' datetime='2012-01-12T10:39:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>10:39 am</span></time>
-        
-      </p>
+<time class='entry-date' datetime='2017-08-29T16:04:14+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>4:04 pm</span></time>
     
-  </header>
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/format/'>format</a>, <a class='category' href='/blog/categories/go/'>go</a>, <a class='category' href='/blog/categories/golang/'>golang</a>, <a class='category' href='/blog/categories/printf/'>printf</a>
+  
+</span>
 
 
-  <div class="entry-content"><h4>1，元字符</h4>
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2017/08/21/qianghongbao-jiandanshixian/">微信抢红包实现</a></h2>
+  
+  <p>
+    <h3>简单流程</h3>
+
+
+
+
+<p><img src="/images/WX20170821-173238@2x.png" alt="understand-mysql-charset" /></p>
+
+
+
+
+<h3>红包何时拆？</h3>
+
+
+
+
+<ol>
+<li>发起者点击发送后，预先拆好红包</li>
+<li>由抢红包用户触发，抢一个计算一个金额</li>
+</ol>
+
+
+
+
+<p>如果由用户来触发拆红包，当拆红包请求达到一个量级的时候，可能会对服务器造成比较大的压力，所以我们在发起者发送完红包后直接计算好红包分数及对应的金额，用户抢红包请求到达，直接赋值，无需计算</p>
+
+
+
+
+<h2>#</h2>
+
+
+
+
+<p>发起红包时拆分，将红包拆分好入栈，简单递归下</p>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$count = 3; //3个红包
+</span><span class='line'>
+</span><span class='line'>$sum = 100; //100元
+</span><span class='line'>
+</span><span class='line'>$current = array();
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>function do_split($sum , $cnt){
+</span><span class='line'>    global $current;
+</span><span class='line'>    if($cnt === 1){
+</span><span class='line'>        $current[] = $sum;
+</span><span class='line'>    }else{
+</span><span class='line'>        $ld = 0.01;
+</span><span class='line'>        $total = $sum / $ld;
+</span><span class='line'>        $max = round($total / $cnt);
+</span><span class='line'>        $min = 1;
+</span><span class='line'>        $currWhide = rand($min , 2 * $max);
+</span><span class='line'>        $current[] = $jqje = $currWhide * $ld;
+</span><span class='line'>        $syje = $sum - $jqje;
+</span><span class='line'>        do_split( $syje , $cnt - 1);
+</span><span class='line'>    }
+</span><span class='line'>    
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>do_split($sum , $count);
+</span><span class='line'>
+</span><span class='line'>var_dump($current);
+</span><span class='line'>
+</span><span class='line'>foreach ($current as $key =&gt; $value) {
+</span><span class='line'>    $redis-&gt;lpush('hongbao1',$value);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<h3>用户抢红包</h3>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$uid = $_GET['uid'];
+</span><span class='line'>$je = $redis-&gt;lpop('hongbao1');
+</span><span class='line'>if($je &gt; 0){
+</span><span class='line'>    echo '恭喜'.$uid.'您抢到'.$je.'元';
+</span><span class='line'>}else{
+</span><span class='line'>    echo $uid.'您的手也太慢了吧！';
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<p>项目地址：<a href="https://github.com/juelite/qianghongbao">https://github.com/juelite/qianghongbao</a></p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2017-08-21T17:29:38+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2017</span></span> <span class='time'>5:29 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/algorithm/'>algorithm</a>, <a class='category' href='/blog/categories/php/'>php</a>, <a class='category' href='/blog/categories/redis/'>redis</a>, <a class='category' href='/blog/categories/wechart/'>wechart</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2017/08/10/shell-history/">Shell History 命令扩展</a></h2>
+  
+  <p>
+    <p><img src="/images/shell_history.png" title="shell history 命令扩展" alt="shell history 命令扩展" /></p>
+
+
+
+
+<ol>
+<li>!^ 获取上一条命令的第一个参数。</li>
+<li>!$ 获取上一条命令的最后一个参数。</li>
+<li>!:n 获取上一条命令的第n个参数，n从1开始。（为0时则挑选出命令名称）</li>
+<li>!:n-x 获取上一条命令的第n个参数到第x个参数，n和x均从1开始。（为0时则挑选出命令名称）</li>
+<li>!* 获取上一条命令的所有参数。</li>
+<li>!n* n为数字，获取上一条命令的从第n个参数（含第n个参数）后的所有参数。</li>
+<li>!n- n为数字，获取上一条命令的从第n个参数（含第n个参数）后的除了最后一个参数外的所有参数。</li>
+</ol>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2017-08-10T11:35:36+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>11:35 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/command/'>command</a>, <a class='category' href='/blog/categories/history/'>history</a>, <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/shell/'>shell</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2017/05/07/windows-xia-ffmpegshi-yong/">Ffmpeg使用</a></h2>
+  
+  <p>
+    <p>列出设备</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -list_devices true -f dshow -i dummy  
+</code></pre>
+
+
+
+
+<p>保存文件</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 mycamera.mkv  
+</code></pre>
+
+
+
+
+<p>直接播放</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffplay -f dshow -i video="Integrated Camera"  
+</code></pre>
+
+
+
+
+<p>推流</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -f dshow -i video="Integrated Camera" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://192.168.1.5/mytv/test1
+</code></pre>
+
+
+
+
+<p>录制屏幕</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -f x11grab -s 1600x900 -r 50 -vcodec libx264 –preset:v ultrafast –tune:v zerolatency -crf 18 -f mpegts rtmp://192.168.1.5/mytv/test2      在Windows平台下，使用-dshow取代x11grab
+</code></pre>
+
+
+
+
+<p>抽帧存图</p>
+
+
+
+
+<p>/usr/local/bin/ffmpeg -i aa.mp4 -vframes 128 -r 1 -q:v 2 -f image2 -ss 90 ~/Downloads/image-1.jpeg;</p>
+
+
+
+
+<p>PHP结合ffmpeg获取视频/音频文件信息</p>
+
+
+
+
+<pre><code>$command = sprintf(FFMPEG_PATH, $file);
+
+ob_start();
+passthru($command);
+$info = ob_get_contents();
+ob_end_clean();
+
+$data = array();
+if (preg_match("/Duration: (.*?), start: (.*?), bitrate: (\d*) kb\/s/", $info, $match)) {
+    $data['duration'] = $match[1]; //播放时间
+    $arr_duration = explode(':', $match[1]);
+    $data['seconds'] = $arr_duration[0] * 3600 + $arr_duration[1] * 60 + $arr_duration[2]; //转换播放时间为秒数
+    $data['start'] = $match[2]; //开始时间
+    $data['bitrate'] = $match[3]; //码率(kb)
+}
+if (preg_match("/Video: (.*?), (.*?), (.*?)[,\s]/", $info, $match)) {
+    $data['vcodec'] = $match[1]; //视频编码格式
+    $data['vformat'] = $match[2]; //视频格式
+    $data['resolution'] = $match[3]; //视频分辨率
+    $arr_resolution = explode('x', $match[3]);
+    $data['width'] = $arr_resolution[0];
+    $data['height'] = $arr_resolution[1];
+}
+if (preg_match("/Audio: (\w*), (\d*) Hz/", $info, $match)) {
+    $data['acodec'] = $match[1]; //音频编码
+    $data['asamplerate'] = $match[2]; //音频采样频率
+}
+if (isset($data['seconds']) &amp;&amp; isset($data['start'])) {
+    $data['play_time'] = $data['seconds'] + $data['start']; //实际播放时间
+}
+$data['size'] = filesize($file); //文件大小
+return $data;
+</code></pre>
+
+
+
+
+<p>-i 指定输入的文件
+-acodec 指定输出文件的音频编码
+-vcodec 指定输出文件的视频编码</p>
+
+
+
+
+<p>最简单的抓屏：</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -f gdigrab -i desktop out.mpg
+</code></pre>
+
+
+
+
+<p>从屏幕的（10,20）点处开始，抓取640x480的屏幕，设定帧率为5</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -f gdigrab -framerate 5 -offset_x 10 -offset_y 20 -video_size 640x480 -i desktop out.mpg
+</code></pre>
+
+
+
+
+<p>//=======================================================================
+    /usr/local/bin/ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
+    对上面的命令稍做个解释。
+    -ss 开始时间，如： 00:00:20，表示从20秒开始；
+    -t 时长，如： 00:00:10，表示截取10秒长的视频；
+    -i 输入，后面是空格，紧跟着就是输入视频文件；
+    -vcodec copy 和 -acodec copy表示所要使用的视频和音频的编码格式，这里指定为copy表示原样拷贝；
+    INPUT，输入视频文件；
+    OUTPUT，输出视频文件；
+//=======================================================================</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -f x11grab -s xga -r 10 -i :0.0+0+0 wheer.avi
+-i video="screen-capture-recorder"
+
+/usr/local/bin/ffmpeg -f dshow -i video="DirectShow video devices" -f dshow -i audio="DirectShow audio devices" -pix_fmt yuv420p -vcodec libx264 -acodec libvo_aacenc -s 1280x720 -r 25 -q 10 -ar 44100 -ac 2 -tune zerolatency -preset ultrafast -f mpegts - | ffmpeg -f mpegts -i - -c copy -bsf:a aac_adtstoasc -f flv temp.flv
+</code></pre>
+
+
+
+
+<p>-r选项设置每秒提取图片的帧数。
+-q:v 2  设置输出文件的视频质量为：优</p>
+
+
+
+
+<p>截取一张352x240尺寸大小的，格式为jpg的图片</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -y -f image2 -t 120.001 -s 352x240 a.jpg
+</code></pre>
+
+
+
+
+<p>把视频的前30帧转换成一个Animated Gif ：</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -vframes 30 -y -f gif a.gif
+</code></pre>
+
+
+
+
+<p>生成缩略图</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -y -f image2 -ss 08.010 -t 0.001 -s 352x240 b.jpg
+</code></pre>
+
+
+
+
+<p>列出本机设备</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -list_devices true -f dshow -i dummy
+</code></pre>
+
+
+
+
+<p>从视频中生成gif图片</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i 1.mp4 -ss 10 -t 10   -s 480x360  tutu.gif
+</code></pre>
+
+
+
+
+<h2>-ss 指从 10s 开始转码,-t 指转换 10s 的视频 -s 指定尺寸</h2>
+
+
+
+
+<pre><code>rtmp://video-center.alivecdn.com/AppName/StreamName?vhost=zhibo.busionline.com
+</code></pre>
+
+
+
+
+<p>前言：FFmpeg是做音视频开发的一个优秀的开源库，可以在不同平台下编译，能够实现视频采集、视频格式转化、视频截图、视频添加水印、视频切片、视频录制、视频推流、更改音视频参数功能等。通过终端命令及开发时如何实现这些功能，本文做一整理记录，以备不时之需。下面共四组命令。</p>
+
+
+
+
+<p>第一组</p>
+
+
+
+
+<p>1.分离视频音频流</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i input_file -vcodec copy -an output_file_video　　//分离视频流ffmpeg -i input_file -acodec copy -vn output_file_audio　　//分离音频流
+</code></pre>
+
+
+
+
+<p>2.视频解复用</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec copy –an –f m4v test.264
+
+/usr/local/bin/ffmpeg –i test.avi –vcodec copy –an –f m4v test.264
+</code></pre>
+
+
+
+
+<p>3.视频转码</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec h264 –s 352*278 –an –f m4v test.264
+</code></pre>
+
+
+
+
+<p>//转码为码流原始文件</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg –i test.mp4 –vcodec h264 –bf 0 –g 25 –s 352*278 –an –f m4v test.264 //转码为码流原始文件
+
+/usr/local/bin/ffmpeg –i test.avi -vcodec mpeg4 –vtag xvid –qsame test_xvid.avi //转码为封装文件
+</code></pre>
+
+
+
+
+<p>说明：-bf B帧数目控制，-g 关键帧间隔控制，-s 分辨率控制</p>
+
+
+
+
+<p>4.视频封装</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg –i video_file –i audio_file –vcodec copy –acodec copy output_file
+</code></pre>
+
+
+
+
+<p>5.视频剪切</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg –i test.avi –r 1 –f image2 image-%3d.jpeg //提取图片
+
+/usr/local/bin/ffmpeg -ss 0:1:30 -t 0:0:20 -i input.avi -vcodec copy -acodec copy output.avi //剪切视频//-r 提取图像的频率，-ss 开始时间，-t 持续时间
+</code></pre>
+
+
+
+
+<p>6.视频录制</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg –i rtsp://192.168.3.205:5555/test –vcodec copy out.avi
+</code></pre>
+
+
+
+
+<p>7、利用ffmpeg视频切片</p>
+
+
+
+
+<p>主要把视频源切成若干个.ts格式的视频片段然后生成一个.m3u8的切片文件索引提供给html5的video做hls直播源</p>
+
+
+
+
+<p>命令如下：</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i 视频源地址 -strict -2 -c:v libx264 -c:a aac -f hls m3u8文件输出地址
+</code></pre>
+
+
+
+
+<p>8、ffmpeg缩放视频</p>
+
+
+
+
+<p>假设原始视频尺寸是 1080p（即 1920×1080 px，16:9），使用下面命令可以缩小到 480p：(ps:以下这个命令，据说违反微信平台相关法律，蛋疼，用不了文字，只能用图片了)</p>
+
+
+
+
+<p>各个参数的含义：-i a.mov 指定待处理视频的文件名-vf scale=853:480 vf 参数用于指定视频滤镜，其中 scale 表示缩放，后面的数字表示缩放至 853×480 px，其中的 853px 是计算而得，因为原始视频的宽高比为 16:9，所以为了让目标视频的高度为 480px，则宽度 = 480 x 9 / 16 = 853-acodec aac 指定音频使用 aac 编码。注：因为 ffmpeg 的内置 aac 编码目前还是试验阶段，故会提示添加参数 “-strict -2” 才能继续，尽管添加即可。又或者使用外部的 libfaac（需要重新编译 ffmpeg）。-vcodec h264 指定视频使用 h264 编码。注：目前手机一般视频拍摄的格式（封装格式、文件格式）为 mov 或者 mp4，这两者的音频编码都是 aac，视频都是 h264。out.mp4 指定输出文件名上面的参数 scale=853:480 当中的宽度和高度实际应用场景中通常只需指定一个，比如指定高度为 480 或者 720，至于宽度则可以传入 “-1” 表示由原始视频的宽高比自动计算而得。即参数可以写为：scale=-1:480，当然也可以 scale=480:-1</p>
+
+
+
+
+<p>9、ffmpeg裁剪</p>
+
+
+
+
+<p>有时可能只需要视频的正中一块，而两头的内容不需要，这时可以对视频进行裁剪（crop），比如有一个竖向的视频 1080 x 1920，如果指向保留中间 1080×1080 部分命令如下：ffmpeg -i 视频源地址 -strict -2 -vf crop=1080:1080:0:420 视频输出地址（如：out.mp4）</p>
+
+
+
+
+<p>其中的 crop=1080:1080:0:420 才裁剪参数，具体含义是 crop=width:height:x:y，其中 width 和 height 表示裁剪后的尺寸，x:y 表示裁剪区域的左上角坐标。比如当前这个示例，我们只需要保留竖向视频的中间部分，所以 x 不用偏移，故传入0，而 y 则需要向下偏移：(1920 – 1080) / 2 = 420</p>
+
+
+
+
+<ol>
+<li><p>转视频格式</p>
+
+<p>/usr/local/bin/ffmpeg -i source.mp4 -c:v libx264 -crf 24 destination.flv</p></li>
+</ol>
+
+
+
+
+<p>其中 -crf 很重要，是控制转码后视频的质量，质量越高，文件也就越大。</p>
+
+
+
+
+<p>此值的范围是 0 到 51：0 表示高清无损；23 是默认值（如果没有指定此参数）；51 虽然文件最小，但效果是最差的。</p>
+
+
+
+
+<p>值越小，质量越高，但文件也越大，建议的值范围是 18 到 28。而值 18 是视觉上看起来无损或接近无损的，当然不代表是数据（技术上）的转码无损。</p>
+
+
+
+
+<p>第二组</p>
+
+
+
+
+<p>1.ffmpeg 把文件当做直播推送至服务器 (RTMP + FLV)</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg - re -i demo.mp4 -c copy - f flv rtmp://w.gslb.letv/live/streamid
+</code></pre>
+
+
+
+
+<p>2.将直播的媒体保存到本地</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://r.glsb.letv/live/streamid -c copy streamfile.flv
+</code></pre>
+
+
+
+
+<p>3.将一个直播流，视频改用h264压缩，音频改用faac压缩，送至另一个直播服务器</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://r.glsb.letv/live/streamidA -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://w.glsb.letv/live/streamb
+</code></pre>
+
+
+
+
+<p>4.提取视频中的音频,并保存为mp3 然后输出</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i input.avi -b:a 128k output.mp3
+</code></pre>
+
+
+
+
+<ol>
+<li><p>将mp3转为pcm</p>
+
+<p> ffmpeg-iinput.mp3-fs16be-acodecpcm_s16beoutput.pcm</p></li>
+</ol>
+
+
+
+
+<p>第三组</p>
+
+
+
+
+<p>1.获取视频的信息</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video.avi
+</code></pre>
+
+
+
+
+<p>2.将图片序列合成视频</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -f image2 -i image%d.jpg video.mpg
+</code></pre>
+
+
+
+
+<p>上面的命令会把当前目录下的图片（名字如：image1.jpg. image2.jpg. 等&hellip;）合并成video.mpg</p>
+
+
+
+
+<p>3.将视频分解成图片序列</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video.mpg image%d.jpg
+</code></pre>
+
+
+
+
+<p>上面的命令会生成image1.jpg. image2.jpg. &hellip;</p>
+
+
+
+
+<pre><code>支持的图片格式有：PGM. PPM. PAM. PGMYUV. JPEG. GIF. PNG. TIFF. SGI
+</code></pre>
+
+
+
+
+<p>4.为视频重新编码以适合在iPod/iPhone上播放</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi input -acodec aac -ab 128kb -vcodec mpeg4 -b 1200kb -mbd 2 -flags +4mv+trell -aic 2 -cmp 2 -subcmp 2 -s 320x180 -title X final_video.mp4
+</code></pre>
+
+
+
+
+<p>5.为视频重新编码以适合在PSP上播放</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi -b 300 -s 320x240 -vcodec xvid -ab 32 -ar 24000 -acodec aac final_video.mp4
+</code></pre>
+
+
+
+
+<p>6.从视频抽出声音.并存为Mp3</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i source_video.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 sound.mp3
+</code></pre>
+
+
+
+
+<p>7.将wav文件转成Mp3</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i son_origine.avi -vn -ar 44100 -ac 2 -ab 192 -f mp3 son_final.mp3
+</code></pre>
+
+
+
+
+<p>8.将.avi视频转成.mpg</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi video_finale.mpg
+</code></pre>
+
+
+
+
+<p>9.将.mpg转成.avi</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.mpg video_finale.avi
+</code></pre>
+
+
+
+
+<p>10.将.avi转成gif动画（未压缩）</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi gif_anime.gif
+</code></pre>
+
+
+
+
+<p>11.合成视频和音频</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i son.wav -i video_origine.avi video_finale.mpg
+</code></pre>
+
+
+
+
+<p>12.将.avi转成.flv</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -ab 56 -ar 44100 -b 200 -r 15 -s 320x240 -f flv video_finale.flv
+</code></pre>
+
+
+
+
+<p>13.将.avi转成dv</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -s pal -r pal -aspect 4:3 -ar 48000 -ac 2 video_finale.dv
+</code></pre>
+
+
+
+
+<p>或者：</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-dv video_finale.dv
+</code></pre>
+
+
+
+
+<p>14.将.avi压缩成divx</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -s 320x240 -vcodec msmpeg4v2 video_finale.avi
+</code></pre>
+
+
+
+
+<p>15.将Ogg Theora压缩成Mpeg dvd</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i film_sortie_cinelerra.ogm -s 720x576 -vcodec mpeg2video -acodec mp3 film_terminate.mpg
+</code></pre>
+
+
+
+
+<p>16.将.avi压缩成SVCD mpeg2</p>
+
+
+
+
+<p>NTSC格式：</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target ntsc-svcd video_finale.mpg
+</code></pre>
+
+
+
+
+<p>PAL格式：</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-dvcd video_finale.mpg
+</code></pre>
+
+
+
+
+<p>17.将.avi压缩成VCD mpeg2</p>
+
+
+
+
+<pre><code>NTSC格式： 
+/usr/local/bin/ffmpeg -i video_origine.avi -target ntsc-vcd video_finale.mpg
+</code></pre>
+
+
+
+
+<p>PAL格式：</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i video_origine.avi -target pal-vcd video_finale.mpg
+</code></pre>
+
+
+
+
+<p>18.多通道编码</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i fichierentree -pass 2 -passlogfile ffmpeg2pass fichiersortie-2
+</code></pre>
+
+
+
+
+<p>19.从flv提取mp3</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i source.flv -ab 128k dest.mp3
+</code></pre>
+
+
+
+
+<p>第四组</p>
+
+
+
+
+<p>1、将文件当做直播送至live</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -re -i localFile.mp4 -c copy -f flv rtmp://server/live/streamName
+</code></pre>
+
+
+
+
+<p>2、将直播媒体保存至本地文件</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/streamName -c copy dump.flv
+</code></pre>
+
+
+
+
+<p>3、将其中一个直播流，视频改用h264压缩，音频不变，送至另外一个直播服务流</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -c:a copy -c:v libx264 -vpre slow -f flv rtmp://server/live/h264Stream
+</code></pre>
+
+
+
+
+<p>4、将其中一个直播流，视频改用h264压缩，音频改用faac压缩，送至另外一个直播服务流</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -c:a libfaac -ar 44100 -ab 48k -c:v libx264 -vpre slow -vpre baseline -f flv rtmp://server/live/h264Stream
+</code></pre>
+
+
+
+
+<p>5、将其中一个直播流，视频不变，音频改用faac压缩，送至另外一个直播服务流</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -acodec libfaac -ar 44100 -ab 48k -vcodec copy -f flv rtmp://server/live/h264_AAC_Stream
+</code></pre>
+
+
+
+
+<p>6、将一个高清流，复制为几个不同视频清晰度的流重新发布，其中音频不变</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -re -i rtmp://server/live/high_FMLE_stream -acodec copy -vcodec x264lib -s 640×360 -b 500k -vpre medium -vpre baseline rtmp://server/live/baseline_500k -acodec copy -vcodec x264lib -s 480×272 -b 300k -vpre medium -vpre baseline rtmp://server/live/baseline_300k -acodec copy -vcodec x264lib -s 320×200 -b 150k -vpre medium -vpre baseline rtmp://server/live/baseline_150k -acodec libfaac -vn -ab 48k rtmp://server/live/audio_only_AAC_48k
+</code></pre>
+
+
+
+
+<p>7、功能一样，只是采用-x264opts选项</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -re -i rtmp://server/live/high_FMLE_stream -c:a copy -c:v x264lib -s 640×360 -x264opts bitrate=500:profile=baseline:preset=slow rtmp://server/live/baseline_500k -c:a copy -c:v x264lib -s 480×272 -x264opts bitrate=300:profile=baseline:preset=slow rtmp://server/live/baseline_300k -c:a copy -c:v x264lib -s 320×200 -x264opts bitrate=150:profile=baseline:preset=slow rtmp://server/live/baseline_150k -c:a libfaac -vn -b:a 48k rtmp://server/live/audio_only_AAC_48k
+</code></pre>
+
+
+
+
+<p>8、将当前摄像头及音频通过DSSHOW采集，视频h264、音频faac压缩后发布</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -r 25 -f dshow -s 640×480 -i video=”video source name”:audio=”audio source name” -vcodec libx264 -b 600k -vpre slow -acodec libfaac -ab 128k -f flv rtmp://server/application/stream_name
+</code></pre>
+
+
+
+
+<p>9、将一个JPG图片经过h264压缩循环输出为mp4视频</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i INPUT.jpg -an -vcodec libx264 -coder 1 -flags +loop -cmp +chroma -subq 10 -qcomp 0.6 -qmin 10 -qmax 51 -qdiff 4 -flags2 +dct8x8 -trellis 2 -partitions +parti8x8+parti4x4 -crf 24 -threads 0 -r 25 -g 25 -y OUTPUT.mp4
+</code></pre>
+
+
+
+
+<p>10、将普通流视频改用h264压缩，音频不变，送至高清流服务(新版本FMS live=1)</p>
+
+
+
+
+<pre><code>/usr/local/bin/ffmpeg -i rtmp://server/live/originalStream -c:a copy -c:v libx264 -vpre slow -f flv “rtmp://server/live/h264Stream live=1〃
+</code></pre>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2017-05-07T18:14:09+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:14 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ffmpeg/'>ffmpeg</a>, <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/duo-mei-ti/'>多媒体</a>, <a class='category' href='/blog/categories/zhi-bo/'>直播</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2015/08/11/gperftools-profile-nginx-mysql-memory/">Gperftools优化nginx和mysql的内存分配</a></h2>
+  
+  <p>
+    <h6>###########  Google 开发的 gperftools 包含四个工具，分别是：TCMalloc、heap-checker、heap-profiler 和 cpu-profiler</h6>
+
+
+
+
+<h6>###########  TCMalloc是 gperftools 的其中一个工具，用于优化C++写的多线程应用，与标准的glibc库的malloc相比，TCMalloc在内存的分配效率和速度要高，可以在高并发的情况下很好的控制内存的使用，提高服务器的性能，降低负载。</h6>
+
+
+
+
+<h6>###########  使用 TCMalloc 优化 Nginx 和 MySQL 的内存管理，性能将会有一定程度的提升，特别是对MYSQL服务器高并发下情况下的性能。</h6>
+
+
+
+
+<h6>###########  安装 libunwind 库</h6>
+
+
+
+
+<h6>###########  如果系统是64位的需要先安装libunwind库，32位系统则不需要安装。</h6>
+
+
+
+
+<h6>###########  libunwind 库为基于64位CPU和操作系统的程序提供了基本的堆栈辗转开解功能，其中包括用于输出堆栈跟踪的API、用于以编程方式辗转开解堆栈的API以及支持C++异常处理机制的API。</h6>
+
+
+
+
+<p>wget <a href="http://download.savannah.gnu.org/releases/libunwind/libunwind-1.0.1.tar.gz">http://download.savannah.gnu.org/releases/libunwind/libunwind-1.0.1.tar.gz</a>
+tar -zxvf libunwind-1.0.1.tar.gz
+cd libunwind-1.0.1/
+CFLAGS=-fPIC ./configure
+make CFLAGS=-fPIC
+make CFLAGS=-fPIC install
+cd ../</p>
+
+
+
+
+<h6>###########  gperftools 的安装</h6>
+
+
+
+
+<h6>###########  gperftools 项目网站 <a href="http://code.google.com/p/gperftools/">http://code.google.com/p/gperftools/</a></h6>
+
+
+
+
+<p>wget <a href="http://gperftools.googlecode.com/files/gperftools-2.0.tar.gz">http://gperftools.googlecode.com/files/gperftools-2.0.tar.gz</a>
+tar -zxvf gperftools-2.0.tar.gz
+cd gperftools-2.0
+./configure &ndash;prefix=/usr/local &ndash;enable-frame-pointers
+make
+make install
+cd ../</p>
+
+
+
+
+<h6>###########  如果是32位系统,可以不添加 –enable-frame-pointers</h6>
+
+
+
+
+<h6>###########  如果是64位系统，并且之前没有安装libunwind，那么一定要添加 –enable-frame-pointers 参数。</h6>
+
+
+
+
+<p>echo &ldquo;/usr/local/lib&rdquo; > /etc/ld.so.conf.d/usr_local_lib.conf
+/sbin/ldconfig</p>
+
+
+
+
+<h6>###########  为 gperftools 添加线程目录:</h6>
+
+
+
+
+<p>mkdir /tmp/tcmalloc
+chmod 0777 /tmp/tcmalloc</p>
+
+
+
+
+<h6>###########  使用gperftools优化Nginx：</h6>
+
+
+
+
+<h6>###########  为了使 Nginx 支持 gperftools，增加参数 –with-google_perftools_module 重新编译Nginx。</h6>
+
+
+
+
+<h6>###########  修改/usr/local/nginx/conf/nginx.conf</h6>
+
+
+
+
+<h6>###########  在pid这行的下面添加</h6>
+
+
+
+
+<p>google_perftools_profiles /tmp/tcmalloc;</p>
+
+
+
+
+<h6>###########  重新启动nginx</h6>
+
+
+
+
+<h6>###########  使用gperftools优化MYSQL：</h6>
+
+
+
+
+<h6>###########  查找文件 /usr/local/mysql/bin/mysqld_safe</h6>
+
+
+
+
+<h6>###########  在# executing mysqld_safe 下面加上</h6>
+
+
+
+
+<p>export LD_PRELOAD=/usr/local/lib/libtcmalloc.so</p>
+
+
+
+
+<h6>###########  重新启动MYSQL</h6>
+
+
+
+
+<h6>###########  验证 tcmalloc 是否运行：</h6>
+
+
+
+
+<p>lsof -n | grep tcmalloc</p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2015-08-11T12:23:38+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:23 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mysql/'>mysql</a>, <a class='category' href='/blog/categories/nginx/'>nginx</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2015/01/06/htop/">Htop是个好东西</a></h2>
+  
+  <p>
+    <pre><code>Htop是一款运行于Linux系统监控与进程管理软件，用于取代Unix下传统的top。与top只提供最消耗资源的进程列表不同，htop提供所有进程的列表，并且使用彩色标识出处理器、swap和内存状态。
+</code></pre>
+
+
+
+
+<p>用户一般可以在top无法提供详尽系统信息的情况下选择安装并使用htop。比如，在查找应用程序的内存泄漏问题时。与top相比，htop提供更方便、光标控制的界面来杀死进程。
+htop用C语言编写，采用了ncurses库。htop的名称源于其作者的名字。</p>
+
+
+
+
+<h2>安装-htop</h2>
+
+
+
+
+<pre><code>yum -y install ncurses-devel #htop依赖ncurses
+cd /opt
+wget -c http://ncu.dl.sourceforge.net/project/htop/htop/1.0.2/htop-1.0.2.tar.gz
+tar xzf htop-1.0.2.tar.gz
+cd htop-1.0.2
+./configure
+make &amp;&amp; make install
+</code></pre>
+
+
+
+
+<h2>示例图片</h2>
+
+
+
+
+<p><img src="/images/2015/htop.gif" title="示例图片" alt="示例图片" /></p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2015-01-06T13:49:16+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>1:49 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/computer/'>computer</a>, <a class='category' href='/blog/categories/linux/'>linux</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/19/css-clearfix/">Css-clearfix</a></h2>
+  
+  <p>
+    <pre><code>&lt;style&gt;
+.clearfix:after{
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: ".";
+    clear: both;
+    height: 0;
+}
+
+* html .clearfix{zoom: 1;}
+*:first-child + html .clearfix{zoom: 1;}
+&lt;/style&gt;
+&lt;div class="clearfix" style="border: 2px solid red;"&gt;
+    &lt;div style="float: left; width: 80px; height: 80px; border: 1px solid blue;"&gt;TEST DIV&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+
+
+
+<h3>说明：</h3>
+
+
+
+
+<ol>
+<li>首先是利用:after这个伪类来兼容FF、Chrome等支持标准的浏览器。:after伪类IE不支持，它用来和content属性一起使用设置在对象后的内容，例如：a:after{content:&ldquo;(link)&rdquo;;}这个CSS将会让a标签内的文本后边加上link文本文字。</li>
+<li>利用“* html”这个只有IE6认识的选择符，设置缩放属性“zoom: 1;”实现兼容IE6。</li>
+<li>利用“*:first-child + html”这个只有IE7认识的选择符，设置缩放属性“zoom: 1;”实现兼容IE7。</li>
+</ol>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-19T11:20:41+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:20 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/css/'>css</a>, <a class='category' href='/blog/categories/html/'>html</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/10/19/mysql-shell-prompt-metachar/">MySQL 的 Prompt 转义字符</a></h2>
+  
+  <p>
+    <pre><code>\c    ：A counter that increments for each statement you issue
+\D    ：The full current date
+\d    ：The default database
+\h    ：The server host
+\l    ：The current delimiter (new in 5.1.12)
+\m    ：Minutes of the current time
+\n    ：A newline character
+\O    ：The current month in three-letter format (Jan, Feb, …)
+\o    ：The current month in numeric format
+\P    ：am/pm
+\p    ：The current TCP/IP port or socket file
+\R    ：The current time, in 24-hour military time (0–23)
+\r    ：The current time, standard 12-hour time (1–12)
+\S    ：Semicolon
+\s    ：Seconds of the current time
+\t    ：A tab character
+\U    ：Your full user_name@host_name account name
+\u    ：Your user name
+\v    ：The server version
+\w    ：The current day of the week in three-letter format (Mon, Tue, …)
+\Y    ：The current year, four digits
+\y    ：The current year, two digits
+\_    ：A space
+\A    ：space (a space follows the backslash)
+\'    ：Single quote
+\"    ：Double quote
+\\    ：A literal “\” backslash character
+\x    ：x, for any “x” not listed above
+</code></pre>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-10-19T10:53:38+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:53 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mysql/'>mysql</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/08/31/html-doctype/">html-DocType</a></h2>
+  
+  <p>
+    <p>&lt;!doctype html></p>
+
+
+
+
+<ol>
+<li>所有浏览器都支持 &lt;!DOCTYPE> 声明。</li>
+<li>&lt;!DOCTYPE> 声明必须是 HTML 文档的第一行，位于 <html> 标签之前。</li>
+<li>&lt;!DOCTYPE> 声明不是 HTML 标签；它是指示 web 浏览器关于页面使用哪个 HTML 版本进行编写的指令。</li>
+<li>在 HTML 4.01 中，&lt;!DOCTYPE> 声明引用 DTD，因为 HTML 4.01 基于 SGML。</li>
+<li>DTD 规定了标记语言的规则，这样浏览器才能正确地呈现内容。</li>
+<li>HTML5 不基于 SGML，所以不需要引用 DTD。</li>
+<li>&lt;!DOCTYPE> 声明没有结束标签。</li>
+<li>&lt;!DOCTYPE> 声明对大小写不敏感。</li>
+</ol>
+
+
+
+
+<p>提示：请始终向 HTML 文档添加 &lt;!DOCTYPE> 声明，这样浏览器才能获知文档类型。</p>
+
+
+
+
+<ul>
+<li>HTML        1991</li>
+<li>HTML+       1993</li>
+<li>HTML 2.0    1995</li>
+<li>HTML 3.2    1997</li>
+<li>HTML 4.01   1999</li>
+<li>XHTML 1.0   2000</li>
+<li>HTML5       2012</li>
+<li>XHTML5      2013</li>
+</ul>
+
+
+
+
+<p>常用的 DOCTYPE 声明如下
+HTML 5
+&lt;!DOCTYPE html></p>
+
+
+
+
+<h3>HTML 4.01 Strict</h3>
+
+
+
+
+<p>该 DTD 包含所有 HTML 元素和属性，但不包括展示性的和弃用的元素（比如 font）。不允许框架集（Framesets）。
+&lt;!DOCTYPE HTML PUBLIC &ldquo;-//W3C//DTD HTML 4.01//EN&rdquo; &ldquo;<a href="http://www.w3.org/TR/html4/strict.dtd">http://www.w3.org/TR/html4/strict.dtd</a>&rdquo;></p>
+
+
+
+
+<h3>HTML 4.01 Transitional</h3>
+
+
+
+
+<p>该 DTD 包含所有 HTML 元素和属性，包括展示性的和弃用的元素（比如 font）。不允许框架集（Framesets）。
+&lt;!DOCTYPE HTML PUBLIC &ldquo;-//W3C//DTD HTML 4.01 Transitional//EN&rdquo; &ldquo;<a href="http://www.w3.org/TR/html4/loose.dtd">http://www.w3.org/TR/html4/loose.dtd</a>&rdquo;></p>
+
+
+
+
+<h3>HTML 4.01 Frameset</h3>
+
+
+
+
+<p>该 DTD 等同于 HTML 4.01 Transitional，但允许框架集内容。
+&lt;!DOCTYPE HTML PUBLIC &ldquo;-//W3C//DTD HTML 4.01 Frameset//EN&rdquo; &ldquo;<a href="http://www.w3.org/TR/html4/frameset.dtd">http://www.w3.org/TR/html4/frameset.dtd</a>&rdquo;></p>
+
+
+
+
+<h3>XHTML 1.0 Strict</h3>
+
+
+
+
+<p>该 DTD 包含所有 HTML 元素和属性，但不包括展示性的和弃用的元素（比如 font）。不允许框架集（Framesets）。必须以格式正确的 XML 来编写标记。
+&lt;!DOCTYPE html PUBLIC &ldquo;-//W3C//DTD XHTML 1.0 Strict//EN&rdquo; &ldquo;<a href="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd</a>&rdquo;></p>
+
+
+
+
+<h3>XHTML 1.0 Transitional</h3>
+
+
+
+
+<p>该 DTD 包含所有 HTML 元素和属性，包括展示性的和弃用的元素（比如 font）。不允许框架集（Framesets）。必须以格式正确的 XML 来编写标记。
+&lt;!DOCTYPE html PUBLIC &ldquo;-//W3C//DTD XHTML 1.0 Transitional//EN&rdquo; &ldquo;<a href="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd</a>&rdquo;></p>
+
+
+
+
+<h3>XHTML 1.0 Frameset</h3>
+
+
+
+
+<p>该 DTD 等同于 XHTML 1.0 Transitional，但允许框架集内容。
+&lt;!DOCTYPE html PUBLIC &ldquo;-//W3C//DTD XHTML 1.0 Frameset//EN&rdquo; &ldquo;<a href="http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd</a>&rdquo;></p>
+
+
+
+
+<h3>XHTML 1.1</h3>
+
+
+
+
+<p>该 DTD 等同于 XHTML 1.0 Strict，但允许添加模型（例如提供对东亚语系的 ruby 支持）。
+&lt;!DOCTYPE html PUBLIC &ldquo;-//W3C//DTD XHTML 1.1//EN&rdquo; &ldquo;<a href="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd</a>&rdquo;></p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-08-31T19:29:52+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>7:29 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/doctype/'>doctype</a>, <a class='category' href='/blog/categories/html/'>html</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/08/31/linux-useful-command/">Linux-有用的命令</a></h2>
+  
+  <p>
+    <p>下面我将和大家分享一些学习Linux命令行的技巧，希望能对大家有所助益。如果在本文中遇到不太熟悉的命令，可以在终端中键入以下命令寻求帮助。
+Man <command>
+ Linux入门必备
+了解bash：没有必要钻研长篇累牍的bash使用手册，通过man bash学习即可。
+了解vi：你在工作中也许会使用Emacs或Eclipse，但vi不可替代。
+了解ssh：学习无密码验证的基础知识。
+bash作业管理基础知识：如使用&amp;、Ctrl-C、fg、bg、Ctrl-Z、jobs和kill等。
+文件管理命令：如硬链接和软链接，权限等。
+网络管理命令：如ifconfig等。
+如何使用正则表达式，如何使用grep、sed等。
+学习使用apt-get和yum管理软件包。
+提升日常工作效率</p>
+
+
+
+
+<p>在bash中，可以使用Ctrl+R命令搜索命令行历史记录。
+在bash中，可以使用Ctrl+W删除最后一个单词，使用Ctrl+U删除整行。
+使用cd -命令返回之前的工作目录，使用cd ..命令返回上层目录。
+学习如何使用xargs：
+$ find . -name *.py | xargs grep some_function<br/>
+$ cat hosts | xargs -I{} ssh root@{} hostnameX
+使用pstree -p命令查看进程树。
+了解不同的信号。例如，使用kill -STOP [PID]终止进程。详细的信号列表可以在man 7 signal中查看。
+如果你想让进程永远在后台运行，可以使用nohup和disown命令。
+使用netstat -lntp命令查看侦听进程，并参考lsof命令。
+在bash脚本中使用subshells对命令进行分组：</p>
+
+
+
+
+<h1>do something in current dir</h1>
+
+
+
+
+<p>(cd /some/other/dir; other-command)</p>
+
+
+
+
+<h1>continue in original dir</h1>
+
+
+
+
+<p>字符串修剪（Trimming Strings）：${var%suffix}和${var#prefix}。例如if var=foo.pdf then echo ${var%.pdf}.txt prints &ldquo;foo.txt"。
+命令的输出可以当做文件使用。例如，比较本地和远程的/etc/hosts文件：
+diff /etc/hosts &lt;(ssh somehost cat /etc/hosts)
+了解bash中的“here documents”。
+了解标准输出和标准错误重定向。
+了解ASCII代码表。可以在终端中运行man ascii命令作为参考。
+当通过ssh远程工作时，可以使用screen 或 dtach保存回话。
+对Web开发者而言，curl、wget等命令非常实用。
+将HTML页面转化文本文件：
+lynx -dump -stdin
+如果要掌握XML，xmlstarlet命令是非常好的工具。
+了解ssh端口映射。
+使用Alt+shift+3快捷键可以在行前添加注释“#”。
+数据处理</p>
+
+
+
+
+<p>了解sort和uniq命令。
+了解cut、paste和join命令。
+了解如何对文本文件做交集、并集和差集：
+cat a b | sort | uniq > c # c is a union b<br/>
+cat a b | sort | uniq -d > c # c is a intersect b<br/>
+cat a b b | sort | uniq -u > c # c is set difference a – b
+对文本文件的第二列做摘要，下面的代码要比同样的Python代码更精炼、快速（3倍）：
+awk &lsquo;{ x += $2 } END { print x }&rsquo;
+了解字符串和grep命令。
+文件分割：了解split（按大小分割）和csplit（按匹配分割）命令。
+系统诊断</p>
+
+
+
+
+<p>使用iostat、netstat、top和dstat命令查看磁盘、处理器和网络的状态。
+使用free、vmstat等命令了解系统内存状态。
+使用mtr网络诊断工具。
+使用iftop、nethogs等工具查看占用带宽的进程和带宽。
+使用ab工具快速洞悉Web服务器的性能。
+以wireshark和tshark命令应对复杂网络诊断。
+学习如何使用strace，并用于诊断运行的进程。这对分析程序运行错误的原因，非常有帮助。
+使用ldd命令查看共享库文件。
+了解如何使用gdb连接到运行中的进程，并进行堆栈跟踪。
+有关/proc的知识非常重要。
+如何诊断已发生的错误？Sar命令是一种很好的选择，它可以收集、保存并报告系统信息。</p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-08-31T18:57:18+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>6:57 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/shell/'>shell</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/08/31/apache-http-request-process/">Apache处理http请求的生命周期</a></h2>
+  
+  <p>
+    <p>Apache请求处理循环的11个阶段都做了哪些事情呢？</p>
+
+
+
+
+<ol>
+<li>Post-Read-Request阶段: 在正常请求处理流程中，这是模块可以插入钩子的第一个阶段。对于那些想很早进入处理请求的模块来说，这个阶段可以被利用。</li>
+<li>URI Translation阶段 :  Apache在本阶段的主要工作：将请求的URL映射到本地文件系统。模块可以在这阶段插入钩子，执行自己的映射逻辑。mod_alias就是利用这个阶段工作的。</li>
+<li>Header Parsing阶段 : Apache在本阶段的主要工作：检查请求的头部。由于模块可以在请求处理流程的任何一个点上执行检查请求头部的任务，因此这个钩子很少被使用。mod_setenvif就是利用这个阶段工作的。</li>
+<li>Access Control阶段 :  Apache在本阶段的主要工作：根据配置文件检查是否允许访问请求的资源。Apache的标准逻辑实现了允许和拒绝指令。mod_authz_host就是利用这个阶段工作的。</li>
+<li>Authentication阶段 :  Apache在本阶段的主要工作：按照配置文件设定的策略对用户进行认证，并设定用户名区域。模块可以在这阶段插入钩子，实现一个认证方法。</li>
+<li>Authorization阶段 :  Apache在本阶段的主要工作：根据配置文件检查是否允许认证过的用户执行请求的操作。模块可以在这阶段插入钩子，实现一个用户权限管理的方法。</li>
+<li>MIME Type Checking阶段 :  Apache在本阶段的主要工作：根据请求资源的MIME类型的相关规则，判定将要使用的内容处理函数。标准模块mod_negotiation和mod_mime实现了这个钩子。</li>
+<li>FixUp阶段 :  这是一个通用的阶段，允许模块在内容生成器之前，运行任何必要的处理流程。和Post_Read_Request类似，这是一个能够捕获任何信息的钩子，也是最常使用的钩子。</li>
+<li>Response阶段 : Apache在本阶段的主要工作：生成返回客户端的内容，负责给客户端发送一个恰当的回复。这个阶段是整个处理流程的核心部分。</li>
+<li>Logging阶段 :  Apache在本阶段的主要工作：在回复已经发送给客户端之后记录事务。模块可能修改或者替换Apache的标准日志记录。</li>
+<li>CleanUp阶段 : Apache在本阶段的主要工作：清理本次请求事务处理完成之后遗留的环境，比如文件、目录的处理或者Socket的关闭等等，这是Apache一次请求处理的最后一个阶段。</li>
+</ol>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-08-31T09:49:40+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>9:49 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apache/'>apache</a>, <a class='category' href='/blog/categories/http/'>http</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/08/31/php-break-keywork/">PHP Break 关键字</a></h2>
+  
+  <p>
+    <p>php的break关键字可以接受一个可选的数字参数来决定跳出几重循环
+break 结束当前 for，foreach，while，do-while 或者 switch 结构的执行。
+break可以接受一个可选的数字参数来决定跳出几重循环。</p>
+
+
+
+
+<pre><code>&lt;?php
+    $arr = array('one', 'two', 'three', 'four', 'stop', 'five');
+    while (list (, $val) = each($arr)) {
+        if ($val == 'stop') {
+            break;    /* You could also write 'break 1;' here. */
+        }
+        echo "$val&lt;br /&gt;\n";
+    }
+
+    /* Using the optional argument. */
+
+    $i = 0;
+    while (++$i) {
+        switch ($i) {
+        case 5:
+            echo "At 5&lt;br /&gt;\n";
+            break 1;  /* Exit only the switch. */
+        case 10:
+            echo "At 10; quitting&lt;br /&gt;\n";
+            break2;  /* Exit the switch and the while. */
+        default:
+            break;
+        }
+    }
+</code></pre>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-08-31T09:26:19+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>9:26 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/05/20/octopress-add-category2rightaside/">Octopress添加分类到侧边栏</a></h2>
+  
+  <p>
+    <h2>增加category_list插件</h2>
+
+
+
+
+<p>保存以下代码到plugins/category_list_tag.rb：</p>
+
+
+
+
+<pre><code>module Jekyll
+  class CategoryListTag &lt; Liquid::Tag
+    def render(context)
+      html = ""
+      categories = context.registers[:site].categories.keys
+      categories.sort.each do |category|
+        posts_in_category = context.registers[:site].categories[category].size
+        category_dir = context.registers[:site].config['category_dir']
+        category_url = File.join(category_dir, category.gsub(/_|\P{Word}/, '-').gsub(/-{2,}/, '-').downcase)
+        html &lt;&lt; "&lt;li class='category'&gt;&lt;a href='/#{category_url}/'&gt;#{category} (#{posts_in_category})&lt;/a&gt;&lt;/li&gt;\n"
+      end
+      html
+    end
+  end
+end
+</code></pre>
+
+
+
+
+<p>Liquid::Template.register_tag(&lsquo;category_list&rsquo;, Jekyll::CategoryListTag)<br/>
+这个插件会向liquid注册一个名为category_list的tag，该tag就是以li的形式将站点所有的category组织起来。如果要将category加入到侧边导航栏，需要增加一个aside。</p>
+
+
+
+
+<h2>增加aside</h2>
+
+
+
+
+<p>复制以下代码到source/_includes/asides/category_list.html。</p>
+
+
+
+
+<pre><code>&lt;section&gt;
+  &lt;h1&gt;Categories&lt;/h1&gt;
+  &lt;ul id="categories"&gt;
+    { % category_list % }
+  &lt;/ul&gt;
+&lt;/section&gt;
+</code></pre>
+
+
+
+
+<h2>配置侧边栏需要修改_config.yml文件，修改其default_asides项：</h2>
+
+
+
+
+<p>default_asides: [asides/category_list.html, asides/recent_posts.html]<br/>
+以上asides根据自己的需求调整。</p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-05-20T23:02:11+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:02 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/octopress/'>octopress</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2014/01/31/consistent-hashing/">一致性哈希算法浅析</a></h2>
+  
+  <p>
+    <p>在做服务器负载均衡时候可供选择的负载均衡的算法有很多，包括：</p>
+
+
+
+
+<ul>
+<li>轮循算法（Round Robin）</li>
+<li>哈希算法（HASH）</li>
+<li>最少连接算法（Least Connection）</li>
+<li>响应速度算法（Response Time）</li>
+<li>加权法（Weighted ）等</li>
+</ul>
+
+
+
+
+<p> 其中哈希算法是最为常用的算法.
+典型的应用场景是： 有N台服务器提供缓存服务，需要对服务器进行负载均衡，将请求平均分发到每台服务器上，每台机器负责1/N的服务。
+常用的算法是对hash结果取余数 (hash() mod N)：对机器编号从0到N-1，按照自定义的hash()算法，对每个请求的hash()值按N取模，得到余数i，然后将请求分发到编号为i的机器。但这样的算法方法存在致命问题，如果某一台机器宕机，那么应该落在该机器的请求就无法得到正确的处理，这时需要将当掉的服务器从算法从去除，此时候会有(N-1)/N的服务器的缓存数据需要重新进行计算；如果新增一台机器，会有N /(N+1)的服务器的缓存数据需要进行重新计算。对于系统而言，这通常是不可接受的颠簸（因为这意味着大量缓存的失效或者数据需要转移）。那么，如何设计一个负载均衡策略，使得受到影响的请求尽可能的少呢？
+在Memcached、Key-Value Store、Bittorrent DHT、LVS中都采用了Consistent Hashing算法，可以说Consistent Hashing 是分布式系统负载均衡的首选算法。
+1、Consistent Hashing算法描述
+下面以Memcached中的Consisten Hashing算法为例说明。
+由于hash算法结果一般为unsigned int型，因此对于hash函数的结果应该均匀分布在[0,232-1]间，如果我们把一个圆环用232 个点来进行均匀切割，首先按照hash(key)函数算出服务器（节点）的哈希值， 并将其分布到0～232的圆上。
+用同样的hash(key)函数求出需要存储数据的键的哈希值，并映射到圆上。然后从数据映射到的位置开始顺时针查找，将数据保存到找到的第一个服务器（节点）上。</p>
+
+
+
+
+<p><img src="/images/consistent-hashing-01.png" alt="consistent hashing" /></p>
+
+
+
+
+<p>Consistent Hashing原理示意图
+新增一个节点的时候，只有在圆环上新增节点逆时针方向的第一个节点的数据会受到影响。删除一个节点的时候，只有在圆环上原来删除节点顺时针方向的第一个节点的数据会受到影响，因此通过Consistent Hashing很好地解决了负载均衡中由于新增节点、删除节点引起的hash值颠簸问题。</p>
+
+
+
+
+<p><img src="/images/consistent-hashing-02.png" alt="consistent hashing" /></p>
+
+
+
+
+<p>Consistent Hashing添加服务器示意图
+虚拟节点（virtual nodes）：之所以要引进虚拟节点是因为在服务器（节点）数较少的情况下（例如只有3台服务器），通过hash(key)算出节点的哈希值在圆环上并不是均匀分布的（稀疏的），仍然会出现各节点负载不均衡的问题。虚拟节点可以认为是实际节点的复制品（replicas），本质上与实际节点实际上是一样的（key并不相同）。引入虚拟节点后，通过将每个实际的服务器（节点）数按照一定的比例(例如200倍)扩大后并计算其hash(key)值以均匀分布到圆环上。在进行负载均衡时候，落到虚拟节点的哈希值实际就落到了实际的节点上。由于所有的实际节点是按照相同的比例复制成虚拟节点的，因此解决了节点数较少的情况下哈希值在圆环上均匀分布的问题。</p>
+
+
+
+
+<p><img src="/images/consistent-hashing-03.png" alt="consistent hashing" /></p>
+
+
+
+
+<p>虚拟节点对Consistent Hashing结果的影响
+从上图可以看出，在节点数为10个的情况下，每个实际节点的虚拟节点数为实际节点的100-200倍的时候，结果还是很均衡的。</p>
+
+
+
+
+<p>第3段中有这些文字：“但这样的算法方法存在致命问题，如果某一台机器宕机，那么应该落在该机器的请求就无法得到正确的处理，这时需要将当掉的服务器从算法从去除，此时候会有(N-1)/N的服务器的缓存数据需要重新进行计算；”
+为何是 (N-1)/N 呢？解释如下：
+  比如有 3 台机器，hash值 1-6 在这3台上的分布就是：
+  host 1: 1 4
+  host 2: 2 5
+  host 3: 3 6
+  如果挂掉一台，只剩两台，模数取 2 ，那么分布情况就变成：
+  host 1: 1 3 5
+  host 2: 2 4 6
+可以看到，还在数据位置不变的只有2个： 1，2，位置发生改变的有4个，占共6个数据的比率是 4/6 = 2/3
+这样的话，受影响的数据太多了，势必太多的数据需要重新从 DB 加载到 cache 中，严重影响性能</p>
+
+
+
+
+<p>【consistent hashing 的办法】
+上面提到的 hash 取模，模数取的比较小，一般是负载的数量，而 consistent hashing 的本质是将模数取的比较大，为 2的32次方减1，即一个最大的 32 位整数。然后，就可以从容的安排数据导向了，那个图还是挺直观的
+以下部分为一致性哈希算法的一种PHP实现。
+下载地址 ：<a href="http://zwzweb.googlecode.com/files/Consistent%20Hashing.php">http://zwzweb.googlecode.com/files/Consistent%20Hashing.php</a></p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2014-01-31T10:27:40+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>31</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>10:27 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/algorithm/'>algorithm</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2013/08/30/jquery-extend-method/">jQuery.extend()函数注释说明</a></h2>
+  
+  <p>
+    <ul>
+<li>// 第一个参数是true，则会迭代合并</li>
+<li>// 合并两个或更多对象的属性到第一个对象中，jQuery后续的大部分功能都通过该函数扩展</li>
+<li>// 通过jQuery.fn.extend扩展的函数，大部分都会调用通过jQuery.extend扩展的同名函数</li>
+<li>// 如果传入两个或多个对象，所有对象的属性会被添加到第一个对象target</li>
+<li>// 如果只传入一个对象，则将对象的属性添加到jQuery对象中。</li>
+<li>// 用这种方式，我们可以为jQuery命名空间增加新的方法。可以用于编写jQuery插件。</li>
+<li>// 如果不想改变传入的对象，可以传入一个空对象：$.extend({}, object1, object2);</li>
+<li>// 默认合并操作是不迭代的，即便target的某个属性是对象或属性，也会被完全覆盖而不是合并</li>
+<li>// 从object原型继承的属性会被拷贝</li>
+<li>// undefined值不会被拷贝</li>
+<li>// 因为性能原因，JavaScript自带类型的属性不会合并</li>
+<li>// jQuery.extend( target, [ object1 ], [ objectN ] )</li>
+<li>// jQuery.extend( [ deep ], target, object1, [ objectN ] )</li>
+</ul>
+
+
+
+
+<pre>
+    jQuery.extend = jQuery.fn.extend = function() {
+        var options, name, src, copy, copyIsArray, clone,
+           target = arguments[0] || {},
+           i = 1,
+           length = arguments.length,
+           deep = false;
+
+        // Handle a deep copy situation
+        // 如果第一个参数是boolean型，可能是深度拷贝
+        if ( typeof target === "boolean" ) {
+           deep = target;
+           target = arguments[1] || {};
+           // skip the boolean and the target
+           // 跳过boolean和target，从第3个开始
+           i = 2;
+        }
+
+        // Handle case when target is a string or something (possible in deep copy)
+        // target不是对象也不是函数，则强制设置为空对象
+        if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
+           target = {};
+        }
+
+        // extend jQuery itself if only one argument is passed
+        // 如果只传入一个参数，则认为是对jQuery扩展
+        if ( length === i ) {
+           target = this;
+           --i;
+        }
+
+        for ( ; i < length; i++ ) {
+           // Only deal with non-null/undefined values
+           // 只处理非空参数
+           if ( (options = arguments[ i ]) != null ) {
+               // Extend the base object
+               for ( name in options ) {
+                  src = target[ name ];
+                  copy = options[ name ];
+
+                  // Prevent never-ending loop
+                  // 避免循环引用
+                  if ( target === copy ) {
+                      continue;
+                  }
+
+                  // Recurse if we're merging plain objects or arrays
+                  // 深度拷贝且值是纯对象或数组，则递归
+                  if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
+                      // 如果copy是数组
+                      if ( copyIsArray ) {
+                         copyIsArray = false;
+                         // clone为src的修正值
+                         clone = src && jQuery.isArray(src) ? src : [];
+                      // 如果copy的是对象
+                      } else {
+                         // clone为src的修正值
+                         clone = src && jQuery.isPlainObject(src) ? src : {};
+                      }
+
+                      // Never move original objects, clone them
+                      // 递归调用jQuery.extend
+                      target[ name ] = jQuery.extend( deep, clone, copy );
+
+                  // Don't bring in undefined values
+                  // 不能拷贝空值
+                  } else if ( copy !== undefined ) {
+                      target[ name ] = copy;
+                  }
+               }
+           }
+        }
+
+        // Return the modified object
+        // 返回更改后的对象
+        return target;
+    };
+</pre>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2013-08-30T14:11:50+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>2:11 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/jquery/'>jquery</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2012/05/30/intr-rsa/">RSA加密算法简单介绍</a></h2>
+  
+  <p>
+    <p>这种算法1978年就出现了，它是第一个既能用于数据加密也能用于数字签名的算法。它易于理解和操作，也很流行。
+   算法的名字以发明者的名字命名：Ron Rivest, AdiShamir 和Leonard Adleman。
+   　　RSA算法是一种非对称密码算法，所谓非对称，就是指该算法需要一对密钥，使用其中一个加密，则需要用另一个
+   才能解密。
+   　　RSA的算法涉及三个参数，n、e、d。
+   　　其中，n是两个大质数p、q的积。n的二进制表示时所占用的位数，就是所谓的密钥长度。
+   　　e和d是一对相关的值，e可以任意取，但要求满足e&lt;(p-1)<em>(q-1)并具 e与(p-1)</em>(q-1)互质（就是最大公约数为1）；
+   再选择d，要求(d<em>e)mod((p-1)</em>(q-1))=1。
+   　　(n及e),(n及d)就是密钥对。
+   　　RSA加解密的算法完全相同,设M为明文，c为密文，则：
+       加密：C=M<sup>e</sup> mod n;
+       解密：m=c<sup>d</sup> mod n;
+   　　注：上面两式中的e和d可以互换。<br/>
+       n d两个数构成公钥，可以告诉别人；
+       n e两个数构成私钥，e自己保留，不让任何人知道。
+       给别人发送的信息使用私钥e加密,只要别人能用公钥d解开就证明信息是由你发送的,构成了签名机制,起验证身份的作用。
+   别人给你发送信息时使用d加密，这样只有拥有e的你能够对其解密,起到数据保密的作用。<br/>
+   整理一下：
+    为实现RSA的加解密
+    最终目标：找三个参数 n,e,d
+    1、n = p<em>q (p,q 是两个质数)
+    2、
+        1)、φ(N)=(p-1)</em>(q-1)
+        2)、取任何一个数e,要求满足e&lt;φ(N)并且e与φ(N)互质
+    3、(d*e) modφ(N)=1
+//================================================================
+加密的明文长度不能超过RSA密钥的长度-11，比如1024位的，明文长度不能超过117。 <br/>
+密文的长度总是密钥的长度的一半，比如1024位的，密文长度是64，如果是1032位，密文长度是65位。</p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2012-05-30T20:40:02+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>8:40 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/algorithm/'>algorithm</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2012/03/23/command-line-skill-of-linux/">Linux命令行技巧</a></h2>
+  
+  <p>
+    <h2>编辑命令</h2>
+
+
+
+
+<pre><code>* Ctrl + a ：移到命令行首
+* Ctrl + e ：移到命令行尾
+* Ctrl + f ：按字符前移（右向）
+* Ctrl + b ：按字符后移（左向）
+* Alt + f ：按单词前移（右向）
+* Alt + b ：按单词后移（左向）
+* Ctrl + xx：在命令行首和光标之间移动
+* Ctrl + u ：从光标处删除至命令行首
+* Ctrl + k ：从光标处删除至命令行尾
+* Ctrl + w ：从光标处删除至字首
+* Alt + d ：从光标处删除至字尾
+* Ctrl + d ：删除光标处的字符
+* Ctrl + h ：删除光标前的字符
+* Ctrl + y ：粘贴至光标后
+* Alt + c ：从光标处更改为首字母大写的单词
+* Alt + u ：从光标处更改为全部大写的单词
+* Alt + l ：从光标处更改为全部小写的单词
+* Ctrl + t ：交换光标处和之前的字符
+* Alt + t ：交换光标处和之前的单词
+* Alt + Backspace：与 Ctrl + w 相同类似
+</code></pre>
+
+
+
+
+<h2>重新执行命令</h2>
+
+
+
+
+<pre><code>* Ctrl + r：逆向搜索命令历史
+* Ctrl + g：从历史搜索模式退出
+* Ctrl + p：历史中的上一条命令
+* Ctrl + n：历史中的下一条命令
+* Alt + .：使用上一条命令的最后一个参数
+</code></pre>
+
+
+
+
+<h2>控制命令</h2>
+
+
+
+
+<pre><code>* Ctrl + l：清屏
+* Ctrl + o：执行当前命令，并选择上一条命令
+* Ctrl + s：阻止屏幕输出
+* Ctrl + q：允许屏幕输出
+* Ctrl + c：终止命令
+* Ctrl + z：挂起命令
+</code></pre>
+
+
+
+
+<h2>Bang (!) 命令</h2>
+
+
+
+
+<pre><code>* !!：执行上一条命令
+* !blah：执行最近的以 blah 开头的命令，如 !ls
+* !blah:p：仅打印输出，而不执行
+* !$：上一条命令的最后一个参数，与 Alt + . 相同
+* !$:p：打印输出 !$ 的内容
+* !*：上一条命令的所有参数
+* !*:p：打印输出 !* 的内容
+* ^blah：删除上一条命令中的 blah
+* ^blah^foo：将上一条命令中的 blah 替换为 foo
+* ^blah^foo^：将上一条命令中所有的 blah 都替换为 foo
+</code></pre>
+
+
+
+
+<h2>注意：</h2>
+
+
+
+
+<pre><code>1. 以上介绍的大多数 Bash 快捷键仅当在 emacs 编辑模式时有效，若你将 Bash 配置为 vi 编辑模式，那将遵循 vi 的按键绑定。Bash 默认为 emacs 编辑模式。如果你的 Bash 不在 emacs 编辑模式，可通过 set -o emacs 设置。
+2. ^S、^Q、^C、^Z 是由终端设备处理的，可用 stty 命令设置。
+</code></pre>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2012-03-23T13:18:37+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2012</span></span> <span class='time'>1:18 pm</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/shell/'>shell</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2012/03/02/note-of-yum/">Yum配置笔记</a></h2>
+  
+  <p>
+    <h3>YUM 优点</h3>
+
+
+
+
+<p>自动解决包的依赖性的问题能更新的添加/删除/更新/RPM包
+便于管理大量系统的更新问题
+可以同时配置多个资源库（Repository）
+简洁的配置文件(/etc/yum.conf)
+保持与RPM数据库的一致性
+有一个比较详细的log.可以查看何时升级了什么软件包</p>
+
+
+
+
+<h3>CentOS的镜像站点</h3>
+
+
+
+
+<p>了解 镜像站点的文件结构 对理解 yum 配置文件 .repo 文件有帮助
+    <a href="http://mirror-status.centos.org">http://mirror-status.centos.org</a>
+    <a href="http://isoredirect.centos.org/centos/5/isos/i386/">http://isoredirect.centos.org/centos/5/isos/i386/</a>
+    addons/      本目录包含Centos的addons 仓库
+    centosplus/  本目录包含Centos的centosplus 仓库
+    extras/      本目录包含Centos的extras 仓库
+    fasttrack/   本目录包含Centos的extras 仓库
+    isos-dvd/    本目录包含发行版的DVD iso 下载
+    isos/        本目录包含发行版 CD iso 下载
+    os/          本目录包含发行版(distributions)的仓库
+    updates/     本目录包含Centos的updates仓库</p>
+
+
+
+
+<h3>CentOS 的仓库</h3>
+
+
+
+
+<p>仓库(repository) 是一个预备好的目录or 网站，包含了软件包和索引。
+yum 可以在仓库中自动定位并获取正确的RPM软件。
+镜像服务器为每个版本的Centos分别提供了一些仓库。
+Centos中的软件管理工具 yum已经预先配置为使用下列四个仓库：
+base: 构成Centos发行版(distributions)的软件包，和光盘上的内容相同
+updates: base 仓库中软件包的更新版本
+addons: 已编译的但不在发行版(distributions)中的软件包
+extras: 一大批附加的软件包
+centospuls:　用于增强一些现有软件包的功能(默认未启用)</p>
+
+
+
+
+<h3>CentOS 仓库的目录结构</h3>
+
+
+
+
+<pre><code>updates/
+ |--SRPMS                        #源代码目录
+ |  |--*.src.rpm                #源代码包目录    
+ |    |--repodata/                #源代码的索引文件
+ |--i386                        #Intel 32位平台的目录
+ |    |--RPMS                        #Intel 32位平台的RPMS目录
+ |    |    |--*.i386.rpm            #在intel 32位平台上编译的包文件
+ |    |    |--*.centos.noarch.rpm    #与平台无关的已编译的包文件
+ |    |--repodata/                #intel 32位平台的索引文件
+ |--x68_64                        #64位平台的目录
+    |--RPMS                        #64位平台的RPMS目录
+    |    |--x68_64.rpm            #在64位平台上编译的包文件
+    |    |--*.centos.noarch.rpm    #与平台无关的已编译的包文件
+    |--repodata/                #64位平台的索引文件
+</code></pre>
+
+
+
+
+<h3>配置YUM客户的更新源</h3>
+
+
+
+
+<p>yum使用reposdir /etc/yum.repos.d 目录下的一系列.repo 文件列出可获取软件包仓库的镜像站点地址.
+默认情况下有两个：
+Centos-Base.repo: 用于设置远程仓库
+Centos-Media.repo: 用于设置本地仓库</p>
+
+
+
+
+<p>yum 目录结构
+    /etc
+      |&ndash;yum/
+      |   |&ndash;/pluginconf.d  <br/>
+      |   |&ndash;/yum-updatesd.conf/
+      |            |&ndash;downloadonly.conf
+      |            |&ndash;fastestmirror.conf
+      |            |&ndash;priorities.conf
+      |&ndash;yum.conf
+      |&ndash;yum.repos.d/
+            |&ndash;CentOS-Base.repo
+            |&ndash;CentOS-Media.repo</p>
+
+
+
+
+<p>在.repo 文件中，配置语法是分段的，每一段配置一个软件仓库，语法如下：
+设置网络更新源
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    [base]  \用于指定仓库
+    name=CentOS-$releasever - Base \用于指定易读的仓库名称
+    mirrorlist=<a href="http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os">http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os</a> \用于指定本仓库的URL
+    #baseurl=<a href="http://mirror.centos.org/centos/$releasever/os/$basearch/">http://mirror.centos.org/centos/$releasever/os/$basearch/</a>
+    #        =<a href="ftp://">ftp://</a>  \用于指定远程ftp协议的愿
+    #        =file://  \ 用于本地镜像或NFS挂载文件系统
+    #nabled=0/1  \用于指定是否使用本地仓库，默认为1，即可用。
+    gpgcheck=1  \用于指定是否检查软件包的GPG签名
+    gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5  \用于指定GPG签名文件的URL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+注：若指定mirrorlist,系统将从Centos 的镜像站点中选择离你最近的仓库。
+[$releasever]当前系统的版本号
+[$basearch] 当前系统的构架
+baseurl 可以指定多个URL ,系统会依次检查你列出的仓库。以便某个服务器宕机时使用另一台服务器</p>
+
+
+
+
+<h3>设置本地更新源</h3>
+
+
+
+
+<p>为了使用 [c5-media]仓库，需将Centos-Base
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    [c5-media]
+    name=CentOS-$releasever - Media
+    baseurl=file:///media/CentOS/
+            file:///media/cdrom/
+            file:///media/cdrecorder/
+    gpgcheck=1
+    enabled=0
+    gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-5
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</p>
+
+
+
+
+<h3>设置非官方更新源</h3>
+
+
+
+
+<pre><code>以安置rpmforge 软件包为例在
+http://rpm.pbone.net/
+http://dag.wieers.com/rpm/
+http://rpmforge.net
+http://rpm.livna.org
+http://freshrpms.net
+http://atrpms.net
+中找到适用于 Centos 5 的软件包
+wget http://................rpmforge-release..... .rpm
+rpm -ivh rpmforge-release........... .rpm
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-rpmforge-*
+</code></pre>
+
+
+
+
+<p>安装 rpmforge-release 软件包之后可以看到/etc/yum.repos.d/rpmfoge.repo文件</p>
+
+
+
+
+<p>or建立一个DAG 的仓库
+vi /etc/yum.repos.d/dag.repo</p>
+
+
+
+
+<pre><code>[dag]
+name=Dag RPM Repository for Red Hat Enterprise Linux
+baseurl=http://apt.sw.be/redhat/el$releasever/en/$basearch/dag
+gpgcheck=1
+enabled=1
+gpgkey=http://dag.wieers.com/packages/RPM-GPG-KYE.dag.txt
+</code></pre>
+
+
+
+
+<h3>yum 命令工具</h3>
+
+
+
+
+<pre><code>yum check-update            检查可更新的软件包
+yum update                    下载更新系统已安装的所有软件把
+yum upgrade                    大规模的升级，不同于上面的是,连旧的淘汰的包也升级
+yum install &lt;packages&gt;        安装指定的软件包
+yum update &lt;packages&gt;        更新指定的软件包
+yum remove &lt;packages&gt;        卸载指定的软件包
+yum groupinstall &lt;packages&gt;    安装指定的软件组中的软件包
+yum groupupdate &lt;packages&gt;    更新 ... ...
+yum groupremove &lt;packages&gt;    卸载 ... ...
+yum grouplist                查看系统中已经安装的和可以用的软件组
+yum list                    列出资源库中所有可以安装or 更新以及已经安装的的rpm包
+yum list &lt;regex&gt;             列出资源库中与正则表达式匹配的可以安装或更新以及已经安装的rpm包
+yum list available             列出资源库中所有可以安装的rpm包
+yum list available &lt;regex&gt;     列出资源库中与正则表达式匹配的所有可以安装的rpm包
+yum list updates             列出资源库中所有可以更新的rpm包
+yum list updates &lt;regex&gt;     列出资源库中与正则表达式匹配的所有可以更新的rpm包
+yum list installed             列出资源库中所有已经安装的rpm包
+yum list installed &lt;regex&gt;     列出资源库中与正则表达式匹配的所有已经安装的rpm包
+yum list extras             列出已经安装的但是不包含在资源库中的rpm包
+yum list extras &lt;regex&gt;     列出与正则表达式匹配的已经安装的但是不包含在资源库中的rpm包
+yum list recent             列出最近被添加到资源库中的软件包
+yum search &lt;regex&gt;             检测所有可用的软件的名称、描述、概述和已列出的维护者，查找与正则表达式匹配的值
+yum provides &lt;regex&gt;         检测软件包中包含的文件以及软件提供的功能，查找与正则表达式匹配的值
+yum clean headers             清除缓存中的rpm头文件
+yum clean packages             清除缓存中rpm包文件
+yum clean all                 清除缓存中的rpm头文件和包文件
+yum deplist &lt;packages&gt;         显示软件包的依赖信息
+</code></pre>
+
+
+
+
+<p>第一次使用yum或者yum资源库有更新是.yum会自动下载所有需要的headers 放置于/var/cache/yum
+还可以用yum info 命令列出包信息,yum info 可用的参数与 yum list的相同
+yum 命令还可以使用 -y 参数 回答命令运行时所提出的问题。</p>
+
+
+
+
+<p>yum update 升级时 排除升级内核
+yum update 排除升级内核，方法有两个:
+1.修改yum的配置文件 vi /etc/yum.conf，在[main]的最后添加exclude=kernel<em>
+2.直接在yum的命令行执行如下的命令：
+yum –exclude=kernel</em> update</p>
+
+
+
+
+<h3>附：</h3>
+
+
+
+
+<p>当仓库配置文件 *.repo 使用了多个URL yum-fastestmirror  可以自动选择最快的镜像站点
+    yum -y install yum-fastestmirror
+    yum-fastestmirror 的配置文件在 /etc/yum/pluginconf.d/fastestmirror.conf 默认不需要修改。</p>
+
+
+
+
+<pre><code>yum -updatesd
+rpm -ql yum-updatesd
+yum -cron
+yum -y install yum-cron
+rpm -ql yum-cron
+/etc
+    |--/cron.daily/yum.cron        每日更新脚本
+    |--/cron.weekly/yum.cron    每周更新脚本
+    |--/rc.d/int.d/yum            启动脚本
+    |--/yum/yum-daily.yum
+/usr/share/doc/yum-cron-0.1
+                        |--/COPYING
+                        |--/README
+</code></pre>
+
+
+
+
+<p>使用yum下载而不安装rpm包
+先安装yum-downloadonly
+    # yum install yum-downloadonly</p>
+
+
+
+
+<p>安装后使用方法如下:
+    # yum update httpd -y &ndash;downloadonly   ###下载到默认目录  /var/cache/yum
+    OR
+    # yum update httpd -y &ndash;downloadonly &ndash;downloaddir=/opt     ##下载到指定目录
+    # yum install perl-MailTools &ndash;downloadonly &ndash;downloaddir=/opt -y     ##如果软件已经下载过了，必须使用这个来下载</p>
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2012-03-02T10:11:18+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2012</span></span> <span class='time'>10:11 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/shell/'>shell</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2012/01/17/understand-mysql-charset/">理解Mysql字符集设置</a></h2>
+  
+  <p>
+    <h3>基本概念</h3>
+
+
+
+
+<ul>
+<li>字符(Character)是指人类语言中最小的表义符号。例如’A’、’B’等；</li>
+<li>给定一系列字符，对每个字符赋予一个数值，用数值来代表对应的字符，这一数值就是字符的编码(Encoding)例如，我们给字符’A’赋予数值0，给字符’B’赋予数值1，则0就是字符’A’的编码；</li>
+<li>给定一系列字符并赋予对应的编码后，所有这些字符和编码对组成的集合就是字符集(Character Set)。例如，给定字符列表为{’A’,’B’}时，{’A’=>0, ‘B’=>1}就是一个字符集；</li>
+<li>字符序(Collation)是指在同一字符集内字符之间的比较规则；</li>
+<li>确定字符序后，才能在一个字符集上定义什么是等价的字符，以及字符之间的大小关系；</li>
+<li>每个字符序唯一对应一种字符集，但一个字符集可以对应多种字符序，其中有一个是默认字符序(Default Collation)；</li>
+<li>MySQL中的字符序名称遵从命名惯例：以字符序对应的字符集名称开头；以<em>ci(表示大小写不敏感)、</em>cs(表示大小写敏感)或_bin(表示按编码值比较)结尾。例如：在字符序“utf8_general_ci”下，字符“a”和“A”是等价的；</li>
+</ul>
+
+
+
+
+<h3>MySQL字符集设置</h3>
+
+
+
+
+<p>• 系统变量：
+    – character_set_server：默认的内部操作字符集
+    – character_set_client：客户端来源数据使用的字符集
+    – character_set_connection：连接层字符集
+    – character_set_results：查询结果字符集
+    – character_set_database：当前选中数据库的默认字符集
+    – character_set_system：系统元数据(字段名等)字符集
+    – 还有以collation<em>开头的同上面对应的变量，用来描述字符序。
+• 用introducer指定文本字符串的字符集：
+    – 格式为：[</em>charset] ’string’ [COLLATE collation]
+    – 例如：
+        • SELECT <em>latin1 ’string’;
+        • SELECT </em>utf8 ‘你好’ COLLATE utf8_general_ci;
+    – 由introducer修饰的文本字符串在请求过程中不经过多余的转码，直接转换为内部字符集处理。</p>
+
+
+
+
+<h3>MySQL中的字符集转换过程</h3>
+
+
+
+
+<pre><code>1. MySQL Server收到请求时将请求数据从character_set_client转换为character_set_connection；
+2. 进行内部操作前将请求数据从character_set_connection转换为内部操作字符集，其确定方法如下：
+    • 使用每个数据字段的CHARACTER SET设定值；
+    • 若上述值不存在，则使用对应数据表的DEFAULT CHARACTER SET设定值(MySQL扩展，非SQL标准)；
+    • 若上述值不存在，则使用对应数据库的DEFAULT CHARACTER SET设定值；
+    • 若上述值不存在，则使用character_set_server设定值。
+3. 将操作结果从内部操作字符集转换为character_set_results。
+</code></pre>
+
+
+
+
+<p><img src="/images/understand-mysql-charset-01.jpg" alt="understand-mysql-charset" /></p>
+
+
+
+
+<h3>常见问题解析</h3>
+
+
+
+
+<ul>
+<li>向默认字符集为utf8的数据表插入utf8编码的数据前没有设置连接字符集，查询时设置连接字符集为utf8</li>
+<li>插入时根据MySQL服务器的默认设置，character_set_client、character_set_connection和character_set_results均为latin1；</li>
+<li>插入操作的数据将经过latin1=>latin1=>utf8的字符集转换过程，这一过程中每个插入的汉字都会从原始的3个字节变成6个字节保存；</li>
+<li>查询时的结果将经过utf8=>utf8的字符集转换过程，将保存的6个字节原封不动返回，产生乱码……</li>
+</ul>
+
+
+
+
+<p><img src="/images/understand-mysql-charset-02.jpg" alt="understand-mysql-charset" /></p>
+
+
+
+
+<ul>
+<li>向默认字符集为latin1的数据表插入utf8编码的数据前设置了连接字符集为utf8</li>
+<li>插入时根据连接字符集设置，character_set_client、character_set_connection和character_set_results均为utf8；</li>
+<li>插入数据将经过utf8=>utf8=>latin1的字符集转换，若原始数据中含有\u0000~\u00ff范围以外的Unicode字 符，会因为无法在latin1字符集中表示而被转换为“?”(0×3F)符号，以后查询时不管连接字符集设置如何都无法恢复其内容了。</li>
+</ul>
+
+
+
+
+<p><img src="/images/understand-mysql-charset-02.jpg" alt="understand-mysql-charset" /></p>
+
+
+
+
+<h3>检测字符集问题的一些手段</h3>
+
+
+
+
+<ul>
+<li>SHOW CHARACTER SET;</li>
+<li>SHOW COLLATION;</li>
+<li>SHOW VARIABLES LIKE ‘character%’;</li>
+<li>SHOW VARIABLES LIKE ‘collation%’;</li>
+<li>SQL函数HEX、LENGTH、CHAR_LENGTH</li>
+<li>SQL函数CHARSET、COLLATION</li>
+</ul>
+
+
+
+
+<h3>使用MySQL字符集时的建议</h3>
+
+
+
+
+<ul>
+<li>建立数据库/表和进行数据库操作时尽量显式指出使用的字符集，而不是依赖于MySQL的默认设置，否则MySQL升级时可能带来很大困扰；</li>
+<li>数据库和连接字符集都使用latin1时虽然大部分情况下都可以解决乱码问题，但缺点是无法以字符为单位来进行SQL操作，一般情况下将数据库和连接字符集都置为utf8是较好的选择；</li>
+<li>使用mysql C API时，初始化数据库句柄后马上用mysql_options设定MYSQL_SET_CHARSET_NAME属性为utf8，这样就不用显式地用 SET NAMES语句指定连接字符集，且用mysql_ping重连断开的长连接时也会把连接字符集重置为utf8；</li>
+<li>对于mysql PHP API，一般页面级的PHP程序总运行时间较短，在连接到数据库以后显式用SET NAMES语句设置一次连接字符集即可；但当使用长连接时，请注意保持连接通畅并在断开重连后用SET NAMES语句显式重置连接字符集。</li>
+</ul>
+
+
+
+
+<h3>其他注意事项</h3>
+
+
+
+
+<ul>
+<li>my.cnf中的default_character_set设置只影响mysql命令连接服务器时的连接字符集，不会对使用libmysqlclient库的应用程序产生任何作用！</li>
+<li>对字段进行的SQL函数操作通常都是以内部操作字符集进行的，不受连接字符集设置的影响。</li>
+<li>SQL语句中的裸字符串会受到连接字符集或introducer设置的影响，对于比较之类的操作可能产生完全不同的结果，需要小心！</li>
+</ul>
+
+
+
+
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2012-01-17T10:39:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>10:39 am</span></time>
+    
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mysql/'>mysql</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+          <article>
+  <h2><a href="/blog/2012/01/12/regex/">Regex（正则）入门</a></h2>
+  
+  <p>
+    <h4>1，元字符</h4>
+
+
+
 
 <pre><code>.  匹配除换行符以外的任意字符
 \w 匹配字母或数字或下划线或汉字
@@ -103,7 +3183,13 @@ $ 匹配字符串的结束 2，重复 * 重复零次或更多次
 $  匹配字符串的结束
 </code></pre>
 
+
+
+
 <h4>2，重复</h4>
+
+
+
 
 <pre><code>*       重复零次或更多次
 +       重复一次或更多次
@@ -113,7 +3199,13 @@ $  匹配字符串的结束
 \{n,m\} 重复 n 次到 m 次
 </code></pre>
 
+
+
+
 <h4>3，常用的反义</h4>
+
+
+
 
 <pre><code>\W       匹配任意不是字母，数字，下划线，汉字的字符 
 \S       匹配任意不是空白符的字符
@@ -123,7 +3215,13 @@ $  匹配字符串的结束
 [^aeiou] 匹配除了aeiou这几个字母以外的任意字符
 </code></pre>
 
+
+
+
 <p>练习1 验证$eamil的合法性</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -153,7 +3251,12 @@ $  匹配字符串的结束
 </span><span class='line'>var_dump($RESULT);</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>输出：</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -167,7 +3270,12 @@ $  匹配字符串的结束
 </span><span class='line'>Asw@zj.info fail</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>练习2 匹配出正确的时间</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -219,7 +3327,12 @@ $  匹配字符串的结束
 </span><span class='line'>var_dump($res);</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>输出：</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -273,15 +3386,25 @@ $  匹配字符串的结束
 </span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>可是我们并没有 &ldquo;4:32  这样的时间应该是正确的&rdquo; 这个正确的时间
 是时候用到分支了</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>$pattern = '/[0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}|[0-9]{1}:[0-5]{1}[0-9]{1}/';</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>注意 匹配分枝条件时，将会从左到右地测试每个条件，如果满足了某个分枝的话，就不会去再管其它的条件了。
 举例：</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -289,16 +3412,29 @@ $  匹配字符串的结束
 </span><span class='line'>#美国邮编的规则是5位数字，或者用连字号间隔的9位数字</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>如果你把它改成\d{5}|\d{5}-\d{4}的话，那么就只会匹配5位的邮编(以及9位邮编的前5位)。</p>
 
+
+
+
 <h4>取反义</h4>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>&lt;a[^&gt;]+&gt;</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>匹配用尖括号括起来的以a开头的字符串。
 匹配以 除 a 标签以外的标签</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -326,7 +3462,12 @@ $  匹配字符串的结束
 </span><span class='line'>var_dump($matches);</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>输出：</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -354,11 +3495,22 @@ $  匹配字符串的结束
 </span><span class='line'>[Finished in 0.1s]</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <h4>后向引用</h4>
+
+
+
 
 <p>后向引用用于重复搜索前面某个分组匹配的文本。例如，\1代表分组1匹配的文本，举例：</p>
 
+
+
+
 <p>从字符串中找出重复出现的单词</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -376,7 +3528,12 @@ $  匹配字符串的结束
 </span><span class='line'>var_dump($matches);</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <p>输出：</p>
+
+
+
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -414,62 +3571,47 @@ $  匹配字符串的结束
 </span><span class='line'>[Finished in 0.1s]</span></code></pre></td></tr></table></div></figure>
 
 
+
+
 <h4>常用分组语法</h4>
+
+
+
 
 <pre><code>捕获 (exp) 匹配exp,并捕获文本到自动命名的组里
 捕获 (?&lt;name&gt;exp) 匹配exp,并捕获文本到名称为name的组里，也可以写成(?'name'exp)
 捕获 (?:exp) 匹配exp,不捕获匹配的文本，也不给此分组分配组号
 </code></pre>
-</div>
-  
-  
 
 
-    </article>
+  </p>
+  <span class="meta">
+    
+
+
+
+
+<time class='entry-date' datetime='2012-01-12T10:39:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>10:39 am</span></time>
+    
+
+<span class="categories">
   
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-    <a class="next" href="/posts/2">Newer &rarr;</a>
-    
+    <a class='category' href='/blog/categories/perl/'>perl</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+  </span>
+
+  
+</article>
+
+        </div>
+      </div>
+      
+    </div>
   </div>
 </div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/">Laravel 5.4 Migrate error:Specified Key Was Too Long Error</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/08/29/golang-printf-type/">Golang Printf Type</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/08/21/qianghongbao-jiandanshixian/">微信抢红包实现</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/08/10/shell-history/">Shell History 命令扩展</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/05/07/windows-xia-ffmpegshi-yong/">Ffmpeg使用</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
 
     </div>
   </div>
@@ -477,15 +3619,9 @@ $  匹配字符串的结束
   Copyright &copy; 2017 - juelite -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
-
-<script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?eaf99bb75dc6ffe41f3a01f12eb5a980";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F2b97bd9d37a4d1a5e2c81905d6d6d75b' type='text/javascript'%3E%3C/script%3E"));
 </script>
 
 </footer>
