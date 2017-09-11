@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mysql | 王誉的记事本]]></title>
   <link href="http://juelite.github.io/blog/categories/mysql/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-11T17:20:15+08:00</updated>
+  <updated>2017-09-11T17:34:30+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[king]]></name>
@@ -147,7 +147,8 @@ chmod 0777 /tmp/tcmalloc</p>
     <link href="http://juelite.github.io/blog/2014/10/19/mysql-shell-prompt-metachar/"/>
     <updated>2014-10-19T10:53:38+08:00</updated>
     <id>http://juelite.github.io/blog/2014/10/19/mysql-shell-prompt-metachar</id>
-    <content type="html"><![CDATA[<pre><code>\c    ：A counter that increments for each statement you issue
+    <content type="html"><![CDATA[<pre><code>```
+\c    ：A counter that increments for each statement you issue
 \D    ：The full current date
 \d    ：The default database
 \h    ：The server host
@@ -175,7 +176,15 @@ chmod 0777 /tmp/tcmalloc</p>
 \"    ：Double quote
 \\    ：A literal “\” backslash character
 \x    ：x, for any “x” not listed above
+```
 </code></pre>
+
+<p>用法实例：
+<code>
+mysql -uroot -p --prompt="\\u@\\h:\\d \\r:\\m:\\s&gt;"
+</code></p>
+
+<p><img src="/images/WX20170911-173112@2x.png" alt="understand-mysql-charset" /></p>
 ]]></content>
   </entry>
   
