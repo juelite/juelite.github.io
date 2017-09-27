@@ -1,0 +1,342 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <script async="false" src="/javascripts/libs/jquery.min.js"></script>
+  <title>Laravel_learn_notes - 王誉的记事本</title>
+  <meta name="author" content="king">
+  
+  <meta name="description" content="1. Eloquent Eloquent 模型约定 数据表名称 ```
+&lt;?php namespace App; use Illuminate\Database\Eloquent\Model; class Article extends Model { // }
+``` 我们并没有告诉 &hellip;">
+  
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="canonical" href="http://juelite.github.io/blog/2017/09/19/laravel-learn-notes">
+  <link href="/favicon.ico" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="王誉的记事本" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!-- font-family: 'Knewave', cursive; -->
+<link href='http://fonts.googleapis.com/css?family=Knewave' rel='stylesheet' type='text/css'>
+<!-- font-family: 'Cantata One', serif; -->
+<link href='http://fonts.googleapis.com/css?family=Cantata+One' rel='stylesheet' type='text/css'>
+
+  <!-- 
+ -->
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1>
+      <a href="/">王誉的记事本</a>
+      
+        <span>记性和笔头</span>
+      
+  </h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:juelite.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Laravel_learn_notes</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-09-19T14:05:35+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>2:05 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>1. Eloquent</h2>
+
+<h3>Eloquent 模型约定</h3>
+
+<h4>数据表名称</h4>
+
+<pre><code>```
+&lt;?php
+    namespace App;
+    use Illuminate\Database\Eloquent\Model;
+    class Article extends Model
+    {
+        //
+    }
+```
+</code></pre>
+
+<p>我们并没有告诉 Eloquent Article模型该用哪张数据表，除非数据表明确地指定了其它名称，否则将使用类的「蛇形名称」、复数形式名称来作为数据表的名称 也就是 articles 默认是他使用的表</p>
+
+<p>我们也可以在模型上定义一个 table 属性，用来指定自定义的数据表名称</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/**
+</span><span class='line'> * 该模型关联数据表
+</span><span class='line'> *
+</span><span class='line'> * @var string
+</span><span class='line'> */
+</span><span class='line'>protected $table = 'my_articles' //指定模型关联的数据表</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>主键</h4>
+
+<p>Eloquent 也会假设每个数据表都有一个叫做 id 的主键字段，我们也可以通过 $primaryKey 属性来重写这个约定</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/**
+</span><span class='line'> * 该模型关联数据表主键
+</span><span class='line'> *
+</span><span class='line'> * @var string
+</span><span class='line'> */
+</span><span class='line'>protected $primaryKey = 'uid';</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注：Eloquent 假定主键是一个递增的整数值，这意味着在默认情况下主键将自动的被强制转换为 int。 如果我们想使用非递增或者非数字的主键，我们必须在模型 public $incrementing 属性设置为false</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/**
+</span><span class='line'> * 该模型表主键自增
+</span><span class='line'> *
+</span><span class='line'> * @var bool
+</span><span class='line'> */
+</span><span class='line'>public $incrementing = false;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>时间戳</h4>
+
+<p>默认情况下，Eloquent 会认为在我们的数据库表有 created_at 和 updated_at 字段，若我们不希望让 Eloquent 来自动维护这两个字段，可在模型内将 $timestamps 属性设置为 false</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/**
+</span><span class='line'> * 该模型是否被自动维护时间戳
+</span><span class='line'> *
+</span><span class='line'> * @var bool
+</span><span class='line'> */
+</span><span class='line'>public $timestamps = false;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>数据库连接</h4>
+
+<p>默认情况下，所有的 Eloquent 模型会使用应用程序中默认的数据库连接设置。如果我们想为模型指定不同的连接，可以使用 $connection 属性</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/**
+</span><span class='line'> * 此模型的连接名称。
+</span><span class='line'> *
+</span><span class='line'> * @var string
+</span><span class='line'> */
+</span><span class='line'>protected $connection = 'connection-name';</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>查询</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;?php
+</span><span class='line'>
+</span><span class='line'>    use App\Article;
+</span><span class='line'>
+</span><span class='line'>    $articles = Article::all();
+</span><span class='line'>
+</span><span class='line'>    foreach ($flights as $flight) {
+</span><span class='line'>        echo $flight-&gt;name;
+</span><span class='line'>    }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面实例可以查询与模型关联的数据表数据，一般我们正式开发不可能这样简单的取出数据，我们还有更多的条件：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$articles = Article::where('status', 1)
+</span><span class='line'>           -&gt;orderBy('created_at', 'desc')
+</span><span class='line'>           -&gt;take(10)
+</span><span class='line'>           -&gt;get();</span></code></pre></td></tr></table></div></figure>
+
+
+<p>更多 Eloquent 查询中使用的方法参见：<a href="https://d.laravel-china.org/docs/5.5/queries#introduction">https://d.laravel-china.org/docs/5.5/queries#introduction</a></p>
+
+<p>类似 all 以及 get 之类的可以取回多个结果的 Eloquent 方法，将会返回一个 Illuminate\Database\Eloquent\Collection 实例， Collection 类提供 多种辅助函数 来处理 Eloquent 结果，参见：<a href="https://d.laravel-china.org/docs/5.5/eloquent-collections#available-methods">https://d.laravel-china.org/docs/5.5/eloquent-collections#available-methods</a></p>
+
+<h2>2.</h2>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">king</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-09-19T14:05:35+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>2:05 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/laravel/'>laravel</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/" title="Previous Post: Laravel 5.4 migrate error:Specified key was too long error">&laquo; Laravel 5.4 migrate error:Specified key was too long error</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2017/09/26/mysql-optimize-note/" title="Next Post: mysql-optimize-note">mysql-optimize-note &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/09/26/mysql-optimize-note/">Mysql-optimize-note</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/09/19/laravel-learn-notes/">Laravel_learn_notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/">Laravel 5.4 Migrate error:Specified Key Was Too Long Error</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/08/29/golang-printf-type/">Golang Printf Type</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/08/21/qianghongbao-jiandanshixian/">微信抢红包实现</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+      <h1>Categories</h1>
+        <ul id="categories">
+                { % category_list %  }
+                  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - king -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a> and <a href="https://github.com/gluttony/object-octopress-theme">Object</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

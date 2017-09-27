@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mysql | 王誉的记事本]]></title>
   <link href="http://juelite.github.io/blog/categories/mysql/atom.xml" rel="self"/>
   <link href="http://juelite.github.io/"/>
-  <updated>2017-09-11T17:47:51+08:00</updated>
+  <updated>2017-09-27T12:01:27+08:00</updated>
   <id>http://juelite.github.io/</id>
   <author>
     <name><![CDATA[king]]></name>
@@ -12,6 +12,60 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[mysql-optimize-note]]></title>
+    <link href="http://juelite.github.io/blog/2017/09/26/mysql-optimize-note/"/>
+    <updated>2017-09-26T15:17:34+08:00</updated>
+    <id>http://juelite.github.io/blog/2017/09/26/mysql-optimize-note</id>
+    <content type="html"><![CDATA[<h3>1/ 选用合适的存储引擎</h3>
+
+<pre><code>innoDB与myISAM区别
+1. myISAM文件存储为三个文件 .frm（表信息） .MYD（数据） .MYI（索引）而innoDB单文件存储，估计这就是myISAM读性能更好的原因吧
+2. myISAM锁为表锁而innoDB为行锁
+3. myISAM会存储表数据的行数，而innoDB不会，故 select count(*) form table时myISAM会快于innoDB
+4. innoDB支持事务，而myISAM不支持
+5. myISAM支持fulltext索引
+</code></pre>
+
+<h3>2/ 选用合适的字段属性和适当的宽度以及尽量不使用null</h3>
+
+<pre><code>char与varchar区别，char固定长度，varchar变长 char(10) 存 abc 会占10个字节  而同样的VARCHAR(10)则只占用5(前2个字节存长度)个字节的长
+null和""区别，null会占用存储空间 ""不会占存储空间
+</code></pre>
+
+<h3>3/ 使用索引</h3>
+
+<pre><code>索引应建立在那些将用于JOIN,WHERE判断和ORDERBY排序的字段上。尽量不要对数据库中某个含有大量重复的值的字段建立索引
+</code></pre>
+
+<h3>4/ 优化的查询语句</h3>
+
+<pre><code>1. 最好是在相同类型的字段间进行比较的操作
+2. 在建有索引的字段上尽量不要使用函数进行操作
+3. 在搜索字符型字段时，我们有时会使用LIKE关键字和通配符，这种做法虽然简单，但却也是以牺牲系统性能为代价的
+4. 只取所需字段，尽量不用select *
+5. 定期查看慢查询日志
+</code></pre>
+
+<h3>5/ 优化mysql配置</h3>
+
+<pre><code>1. key_buffer_size：表示索引缓存的大小。这个值越大，使用索引进行查询的速度就越快
+2. table_cache：表示同时打开的表的个数。这个值越大，能同时打开的表的个数就越多。这个值不是越大越好，因为同时打开的表过多会影响操作系统的性能
+3. query_cache_size：表示查询缓冲区的大小。使用查询缓存区可以提高查询的速度。这个方式只使用与修改操作少且经常执行相同的查询操作的情况
+4. Query_cache_type：表示查询缓存区的开启状态。0表示关闭，1表示开启
+5. Max_connections：表示数据库的最大连接数。这个连接数不是越大越好，因为连接会浪费内存的资源
+6. Sort_buffer_size：排序缓存区的大小，这个值越大，排序就越快
+7. Innodb_buffer_pool_size：表示InnoDB类型的表和索引的最大缓存。这个值越大，查询的速度就会越快。这个值太大了就会影响操作系统的性能
+</code></pre>
+
+<h3>6/ 对大表进行拆分</h3>
+
+<pre><code>1. 水平拆分 比如10000条记录分一张表
+2. 垂直拆分 比如将新闻信息放在一张表 新闻内容放在另一张表
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Laravel 5.4 migrate error:Specified key was too long error]]></title>

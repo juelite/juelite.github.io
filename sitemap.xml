@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://juelite.github.io/blog/2017/09/26/mysql-optimize-note/</loc>
+<lastmod>2017-09-26T15:17:34+08:00</lastmod>
+</url>
+<url>
+<loc>http://juelite.github.io/blog/2017/09/19/laravel-learn-notes/</loc>
+<lastmod>2017-09-19T14:05:35+08:00</lastmod>
+</url>
+<url>
 <loc>http://juelite.github.io/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/</loc>
 <lastmod>2017-09-06T09:52:28+08:00</lastmod>
 </url>
@@ -193,8 +201,5 @@
 </url>
 <url>
 <loc>http://juelite.github.io/blog/categories/utf8mb4/</loc>
-</url>
-<url>
-<loc>http://juelite.github.io/posts/2/</loc>
 </url>
 </urlset>
