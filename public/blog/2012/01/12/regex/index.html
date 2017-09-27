@@ -1,0 +1,540 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Regex（正则）入门 - yuuuu.wang`blog</title>
+  <meta name="author" content="wang yu">
+
+  
+  <meta name="description" content="1，元字符 . 匹配除换行符以外的任意字符
+\w 匹配字母或数字或下划线或汉字
+\s 匹配任意空白符
+\d 匹配数字
+\b 匹配单词的开始或结束
+^ 匹配字符串的开始
+$ 匹配字符串的结束 2，重复 * 重复零次或更多次
++ 重复一次或更多次
+? 重复零次或一次
+\{n\} 重复 n 次
+\{n &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.yuuuu.wang/blog/2012/01/12/regex/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="yuuuu.wang`blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">yuuuu.wang`blog</a></h1>
+  
+    <h2>power by wang yu</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="blog.yuuuu.wang">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Regex（正则）入门</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2012-01-12T10:39:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>10:39 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h4>1，元字符</h4>
+
+<pre><code>.  匹配除换行符以外的任意字符
+\w 匹配字母或数字或下划线或汉字
+\s 匹配任意空白符
+\d 匹配数字
+\b 匹配单词的开始或结束
+^  匹配字符串的开始
+$  匹配字符串的结束
+</code></pre>
+
+<h4>2，重复</h4>
+
+<pre><code>*       重复零次或更多次
++       重复一次或更多次
+?       重复零次或一次
+\{n\}   重复 n 次
+\{n,\}  重复 n 次或更多次
+\{n,m\} 重复 n 次到 m 次
+</code></pre>
+
+<h4>3，常用的反义</h4>
+
+<pre><code>\W       匹配任意不是字母，数字，下划线，汉字的字符 
+\S       匹配任意不是空白符的字符
+\D       匹配任意非数字的字符
+\B       匹配不是单词开头或结束的位置
+[^x]     匹配除了x以外的任意字符
+[^aeiou] 匹配除了aeiou这几个字母以外的任意字符
+</code></pre>
+
+<p>练习1 验证$eamil的合法性</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$email = array('444371889@qq.com','1212121212.com','hahahaha','Asw@zj.gov.cn','Asw@zj.info');
+</span><span class='line'>
+</span><span class='line'>$pattern = '/^[a-z0-9_]+@(?:[a-z0-9_-]+\.)+(?:com|cn)/i'; // （exp）匹配并捕获 （?:exp）匹配
+</span><span class='line'>
+</span><span class='line'>foreach ($email as $key =&gt; $value) {
+</span><span class='line'>  if(preg_match($pattern, $value)){
+</span><span class='line'>      echo $value , ' pass' , PHP_EOL;
+</span><span class='line'>  }else{
+</span><span class='line'>      echo $value , ' fail' , PHP_EOL;
+</span><span class='line'>  }
+</span><span class='line'>  //preg_match($pattern, $value , $RESULT[$key]);
+</span><span class='line'>}
+</span><span class='line'>var_dump($RESULT);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>444371889@qq.com pass
+</span><span class='line'>1212121212.com fail
+</span><span class='line'>hahahaha fail
+</span><span class='line'>Asw@zj.gov.cn pass
+</span><span class='line'>Asw@zj.info fail</span></code></pre></td></tr></table></div></figure>
+
+
+<p>练习2 匹配出正确的时间</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$str = "
+</span><span class='line'>13:00
+</span><span class='line'>212:36w ww22:48kl
+</span><span class='line'>4:32  这样的时间应该是正确的
+</span><span class='line'>22:00
+</span><span class='line'>23:59
+</span><span class='line'>22:61
+</span><span class='line'>1112:13 非法
+</span><span class='line'>43:33 非法
+</span><span class='line'>12:60
+</span><span class='line'>12:33
+</span><span class='line'>000:34
+</span><span class='line'>00:00
+</span><span class='line'>23:59
+</span><span class='line'>24:59 显然没有这样的时间
+</span><span class='line'>24:00
+</span><span class='line'>30
+</span><span class='line'>";
+</span><span class='line'>
+</span><span class='line'>$pattern = '/[0-2]{1}[0-3]{1}:[0-5]{1}[0-9]{1}/';
+</span><span class='line'>
+</span><span class='line'>preg_match_all($pattern, $str , $res);
+</span><span class='line'>
+</span><span class='line'>var_dump($res);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>array(1) {
+</span><span class='line'>  [0]=&gt;
+</span><span class='line'>  array(10) {
+</span><span class='line'>      [0]=&gt;
+</span><span class='line'>      string(5) "13:00"
+</span><span class='line'>      [1]=&gt;
+</span><span class='line'>      string(5) "12:36"
+</span><span class='line'>      [2]=&gt;
+</span><span class='line'>      string(5) "22:48"
+</span><span class='line'>      [3]=&gt;
+</span><span class='line'>      string(5) "22:00"
+</span><span class='line'>      [4]=&gt;
+</span><span class='line'>      string(5) "23:59"
+</span><span class='line'>      [5]=&gt;
+</span><span class='line'>      string(5) "12:13"
+</span><span class='line'>      [6]=&gt;
+</span><span class='line'>      string(5) "12:33"
+</span><span class='line'>      [7]=&gt;
+</span><span class='line'>      string(5) "00:34"
+</span><span class='line'>      [8]=&gt;
+</span><span class='line'>      string(5) "00:00"
+</span><span class='line'>      [9]=&gt;
+</span><span class='line'>      string(5) "23:59"
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可是我们并没有 &ldquo;4:32  这样的时间应该是正确的&rdquo; 这个正确的时间
+是时候用到分支了</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$pattern = '/[0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}|[0-9]{1}:[0-5]{1}[0-9]{1}/';</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意 匹配分枝条件时，将会从左到右地测试每个条件，如果满足了某个分枝的话，就不会去再管其它的条件了。
+举例：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>\d{5}-\d{4}|\d{5} //匹配类似 23843-3234 或 21234 美国邮编格式 
+</span><span class='line'>#美国邮编的规则是5位数字，或者用连字号间隔的9位数字</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你把它改成\d{5}|\d{5}-\d{4}的话，那么就只会匹配5位的邮编(以及9位邮编的前5位)。</p>
+
+<h4>取反义</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;a[^&gt;]+&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>匹配用尖括号括起来的以a开头的字符串。
+匹配以 除 a 标签以外的标签</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#匹配以 除 a 标签以外的元素
+</span><span class='line'>$str = '&lt;a&gt;baidu&lt;/a&gt; 
+</span><span class='line'>      &lt;a href="http://baidu.com"&gt;&lt;/a&gt; 
+</span><span class='line'>      &lt;a href="baidu.com"&gt;&lt;/a&gt; 
+</span><span class='line'>      &lt;span&gt;baidu&lt;/span&gt; 
+</span><span class='line'>      &lt;div&gt;hahahaha&lt;/div&gt; 
+</span><span class='line'>      &lt;font color="red"&gt;121&lt;/font&gt;';
+</span><span class='line'>
+</span><span class='line'>$pattern = '/&lt;[^a\/].*/i';
+</span><span class='line'>preg_match_all($pattern, $str, $matches);
+</span><span class='line'>
+</span><span class='line'>var_dump($matches);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>array(1) {
+</span><span class='line'>  [0]=&gt;
+</span><span class='line'>      array(3) {
+</span><span class='line'>          [0]=&gt;
+</span><span class='line'>          string(19) "&lt;span&gt;baidu&lt;/span&gt; "
+</span><span class='line'>          [1]=&gt;
+</span><span class='line'>          string(20) "&lt;div&gt;hahahaha&lt;/div&gt; "
+</span><span class='line'>          [2]=&gt;
+</span><span class='line'>          string(28) "&lt;font color="red"&gt;121&lt;/font&gt;"
+</span><span class='line'>      }
+</span><span class='line'>}
+</span><span class='line'>[Finished in 0.1s]</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>后向引用</h4>
+
+<p>后向引用用于重复搜索前面某个分组匹配的文本。例如，\1代表分组1匹配的文本，举例：</p>
+
+<p>从字符串中找出重复出现的单词</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$str = 'hello kit kit , let`s go to play basketball , go go go';
+</span><span class='line'>
+</span><span class='line'>$pattern = '/\b(\w+)\b\s+\1\b/i';
+</span><span class='line'>
+</span><span class='line'>preg_match_all($pattern, $str, $matches);
+</span><span class='line'>
+</span><span class='line'>var_dump($matches);</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>array(2) {
+</span><span class='line'>  [0]=&gt;
+</span><span class='line'>      array(2) {
+</span><span class='line'>      [0]=&gt;
+</span><span class='line'>      string(7) "kit kit"
+</span><span class='line'>      [1]=&gt;
+</span><span class='line'>      string(5) "go go"
+</span><span class='line'>  }
+</span><span class='line'>  [1]=&gt;
+</span><span class='line'>      array(2) {
+</span><span class='line'>      [0]=&gt;
+</span><span class='line'>      string(3) "kit"
+</span><span class='line'>      [1]=&gt;
+</span><span class='line'>      string(2) "go"
+</span><span class='line'>  }
+</span><span class='line'>}
+</span><span class='line'>[Finished in 0.1s]</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>常用分组语法</h4>
+
+<pre><code>捕获 (exp) 匹配exp,并捕获文本到自动命名的组里
+捕获 (?&lt;name&gt;exp) 匹配exp,并捕获文本到名称为name的组里，也可以写成(?'name'exp)
+捕获 (?:exp) 匹配exp,不捕获匹配的文本，也不给此分组分配组号
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">wang yu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2012-01-12T10:39:27+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2012</span></span> <span class='time'>10:39 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/perl/'>perl</a>, <a class='category' href='/blog/categories/php/'>php</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://blog.yuuuu.wang/blog/2012/01/12/regex/" data-via="" data-counturl="http://blog.yuuuu.wang/blog/2012/01/12/regex/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2012/01/17/understand-mysql-charset/" title="Next Post: 理解Mysql字符集设置">理解Mysql字符集设置 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/09/26/mysql-optimize-note/">Mysql-optimize-note</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/09/19/laravel-learn-notes/">Laravel_learn_notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/">Laravel 5.4 Migrate error:Specified Key Was Too Long Error</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/08/29/golang-printf-type/">Golang Printf Type</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/08/21/qianghongbao-jiandanshixian/">微信抢红包实现</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - wang yu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

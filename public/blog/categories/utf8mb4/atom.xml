@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Utf8mb4 | yuuuu.wang`blog]]></title>
+  <link href="http://blog.yuuuu.wang/blog/categories/utf8mb4/atom.xml" rel="self"/>
+  <link href="http://blog.yuuuu.wang/"/>
+  <updated>2017-09-27T13:53:05+08:00</updated>
+  <id>http://blog.yuuuu.wang/</id>
+  <author>
+    <name><![CDATA[wang yu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Laravel 5.4 Migrate error:Specified Key Was Too Long Error]]></title>
+    <link href="http://blog.yuuuu.wang/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/"/>
+    <updated>2017-09-06T09:52:28+08:00</updated>
+    <id>http://blog.yuuuu.wang/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error</id>
+    <content type="html"><![CDATA[<pre><code>[Illuminate\Database\QueryException]                                                                                                                                                 
+  SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes (SQL: alter table `users` add unique `users_email_unique`(`email`))  
+
+
+
+  [PDOException]                                                                                                   
+  SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too long; max key length is 767 bytes 
+</code></pre>
+
+<h3>问题根源</h3>
+
+<p>MySql支持的utf8编码最大字符长度为3字节，如果遇到4字节的宽字符就会出现插入异常。三个字节UTF-8最大能编码的Unicode字符是0xffff，即Unicode中的基本多文种平面（BMP）。因而包括Emoji表情（Emoji是一种特殊的Unicode编码）在内的非基本多文种平面的Unicode字符都无法使用MySql的utf8字符集存储。</p>
+
+<p>这也应该就是Laravel 5.4改用4字节长度的utf8mb4字符编码的原因之一。不过要注意的是，只有MySql 5.5.3版本以后才开始支持utf8mb4字符编码（查看版本：selection version();）。如果MySql版本过低，需要进行版本更新。</p>
+
+<p>注：如果是从Laravel 5.3升级到Laravel 5.4，不需要对字符编码做切换。</p>
+
+<h3>解决问题</h3>
+
+<p>1.升级MySql版本到5.5.3以上。
+2.手动配置迁移命令migrate生成的默认字符串长度，在AppServiceProvider中调用Schema::defaultStringLength方法来实现配置：
+文件位置：/Users/wy/Documents/www/news.local.com/app/Providers/AppServiceProvider.php
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>use Illuminate\Support\Facades\Schema;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;/&lt;em&gt;*
+</span><span class='line'>* Bootstrap any application services.
+</span><span class='line'>*
+</span><span class='line'>* @return void
+</span><span class='line'>&lt;/em&gt;/
+</span><span class='line'>public function boot()
+</span><span class='line'>{
+</span><span class='line'>   Schema::defaultStringLength(191);
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure></p>
+]]></content>
+  </entry>
+  
+</feed>
