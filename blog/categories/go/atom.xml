@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Go | yuuuu.wang`blog]]></title>
+  <link href="http://juelite.github.io/blog/categories/go/atom.xml" rel="self"/>
+  <link href="http://juelite.github.io/"/>
+  <updated>2017-09-27T14:23:47+08:00</updated>
+  <id>http://juelite.github.io/</id>
+  <author>
+    <name><![CDATA[wang yu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Golang Printf Type]]></title>
+    <link href="http://juelite.github.io/blog/2017/08/29/golang-printf-type/"/>
+    <updated>2017-08-29T16:04:14+08:00</updated>
+    <id>http://juelite.github.io/blog/2017/08/29/golang-printf-type</id>
+    <content type="html"><![CDATA[<table>
+<thead>
+<tr>
+<th style="text-align:center;">符号 </th>
+<th style="text-align:left;"> 注释 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">%d          </td>
+<td style="text-align:left;">int变量</td>
+</tr>
+<tr>
+<td style="text-align:center;">%x, %o, %b  </td>
+<td style="text-align:left;">分别为16进制，8进制，2进制形式的int</td>
+</tr>
+<tr>
+<td style="text-align:center;">%f, %g, %e  </td>
+<td style="text-align:left;">浮点数： 3.141593 3.141592653589793 3.141593e+00</td>
+</tr>
+<tr>
+<td style="text-align:center;">%t          </td>
+<td style="text-align:left;">布尔变量：true 或 false</td>
+</tr>
+<tr>
+<td style="text-align:center;">%c          </td>
+<td style="text-align:left;">rune (Unicode码点)，Go语言里特有的Unicode字符类型</td>
+</tr>
+<tr>
+<td style="text-align:center;">%s          </td>
+<td style="text-align:left;">string</td>
+</tr>
+<tr>
+<td style="text-align:center;">%q          </td>
+<td style="text-align:left;">带双引号的字符串 &ldquo;abc&rdquo; 或 带单引号的 rune &lsquo;c&rsquo;</td>
+</tr>
+<tr>
+<td style="text-align:center;">%v          </td>
+<td style="text-align:left;">会将任意变量以易读的形式打印出来</td>
+</tr>
+<tr>
+<td style="text-align:center;">%T          </td>
+<td style="text-align:left;">打印变量的类型</td>
+</tr>
+<tr>
+<td style="text-align:center;">%%          </td>
+<td style="text-align:left;">字符型百分比标志（%符号本身，没有其他操作）</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
+  
+</feed>

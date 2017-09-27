@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Php | yuuuu.wang`blog]]></title>
+  <link href="http://juelite.github.io/blog/categories/php/atom.xml" rel="self"/>
+  <link href="http://juelite.github.io/"/>
+  <updated>2017-09-27T14:23:47+08:00</updated>
+  <id>http://juelite.github.io/</id>
+  <author>
+    <name><![CDATA[wang yu]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[微信抢红包实现]]></title>
+    <link href="http://juelite.github.io/blog/2017/08/21/qianghongbao-jiandanshixian/"/>
+    <updated>2017-08-21T17:29:38+08:00</updated>
+    <id>http://juelite.github.io/blog/2017/08/21/qianghongbao-jiandanshixian</id>
+    <content type="html"><![CDATA[<h3>简单流程</h3>
+
+<p><img src="/images/WX20170821-173238@2x.png" alt="understand-mysql-charset" /></p>
+
+<h3>红包何时拆？</h3>
+
+<ol>
+<li>发起者点击发送后，预先拆好红包</li>
+<li>由抢红包用户触发，抢一个计算一个金额</li>
+</ol>
+
+
+<p>如果由用户来触发拆红包，当拆红包请求达到一个量级的时候，可能会对服务器造成比较大的压力，所以我们在发起者发送完红包后直接计算好红包分数及对应的金额，用户抢红包请求到达，直接赋值，无需计算</p>
+
+<h2>#</h2>
+
+<p>发起红包时拆分，将红包拆分好入栈，简单递归下</p>
+
+<pre><code>    $count = 3; //3个红包
+
+    $sum = 100; //100元
+
+    $current = array();
+
+
+    function do_split($sum , $cnt){
+        global $current;
+        if($cnt === 1){
+            $current[] = $sum;
+        }else{
+            $ld = 0.01;
+            $total = $sum / $ld;
+            $max = round($total / $cnt);
+            $min = 1;
+            $currWhide = rand($min , 2 * $max);
+            $current[] = $jqje = $currWhide * $ld;
+            $syje = $sum - $jqje;
+            do_split( $syje , $cnt - 1);
+        }
+
+    }
+
+
+    do_split($sum , $count);
+
+    var_dump($current);
+
+    foreach ($current as $key =&gt; $value) {
+        $redis-&gt;lpush('hongbao1',$value);
+    }
+</code></pre>
+
+<h3>用户抢红包</h3>
+
+<pre><code>    $uid = $_GET['uid'];
+    $je = $redis-&gt;lpop('hongbao1');
+    if($je &gt; 0){
+        echo '恭喜'.$uid.'您抢到'.$je.'元';
+    }else{
+        echo $uid.'您的手也太慢了吧！';
+    }
+</code></pre>
+
+<p>项目地址：<a href="https://github.com/juelite/qianghongbao">https://github.com/juelite/qianghongbao</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PHP Break 关键字]]></title>
+    <link href="http://juelite.github.io/blog/2014/08/31/php-break-keywork/"/>
+    <updated>2014-08-31T09:26:19+08:00</updated>
+    <id>http://juelite.github.io/blog/2014/08/31/php-break-keywork</id>
+    <content type="html"><![CDATA[<p>php的break关键字可以接受一个可选的数字参数来决定跳出几重循环
+break 结束当前 for，foreach，while，do-while 或者 switch 结构的执行。
+break可以接受一个可选的数字参数来决定跳出几重循环。</p>
+
+<pre><code>&lt;?php
+    $arr = array('one', 'two', 'three', 'four', 'stop', 'five');
+    while (list (, $val) = each($arr)) {
+        if ($val == 'stop') {
+            break;    /* You could also write 'break 1;' here. */
+        }
+        echo "$val&lt;br /&gt;\n";
+    }
+
+    /* Using the optional argument. */
+
+    $i = 0;
+    while (++$i) {
+        switch ($i) {
+        case 5:
+            echo "At 5&lt;br /&gt;\n";
+            break 1;  /* Exit only the switch. */
+        case 10:
+            echo "At 10; quitting&lt;br /&gt;\n";
+            break2;  /* Exit the switch and the while. */
+        default:
+            break;
+        }
+    }
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Regex（正则）入门]]></title>
+    <link href="http://juelite.github.io/blog/2012/01/12/regex/"/>
+    <updated>2012-01-12T10:39:27+08:00</updated>
+    <id>http://juelite.github.io/blog/2012/01/12/regex</id>
+    <content type="html"><![CDATA[<h4>1，元字符</h4>
+
+<pre><code>.  匹配除换行符以外的任意字符
+\w 匹配字母或数字或下划线或汉字
+\s 匹配任意空白符
+\d 匹配数字
+\b 匹配单词的开始或结束
+^  匹配字符串的开始
+$  匹配字符串的结束
+</code></pre>
+
+<h4>2，重复</h4>
+
+<pre><code>*       重复零次或更多次
++       重复一次或更多次
+?       重复零次或一次
+\{n\}   重复 n 次
+\{n,\}  重复 n 次或更多次
+\{n,m\} 重复 n 次到 m 次
+</code></pre>
+
+<h4>3，常用的反义</h4>
+
+<pre><code>\W       匹配任意不是字母，数字，下划线，汉字的字符 
+\S       匹配任意不是空白符的字符
+\D       匹配任意非数字的字符
+\B       匹配不是单词开头或结束的位置
+[^x]     匹配除了x以外的任意字符
+[^aeiou] 匹配除了aeiou这几个字母以外的任意字符
+</code></pre>
+
+<p>练习1 验证$eamil的合法性</p>
+
+<pre><code>    $email = array('444371889@qq.com','1212121212.com','hahahaha','Asw@zj.gov.cn','Asw@zj.info');
+
+    $pattern = '/^[a-z0-9_]+@(?:[a-z0-9_-]+\.)+(?:com|cn)/i'; // （exp）匹配并捕获 （?:exp）匹配
+
+    foreach ($email as $key =&gt; $value) {
+        if(preg_match($pattern, $value)){
+            echo $value , ' pass' , PHP_EOL;
+        }else{
+            echo $value , ' fail' , PHP_EOL;
+        }
+        //preg_match($pattern, $value , $RESULT[$key]);
+    }
+    var_dump($RESULT);
+</code></pre>
+
+<p>输出：
+<code>
+    444371889@qq.com pass
+    1212121212.com fail
+    hahahaha fail
+    Asw@zj.gov.cn pass
+    Asw@zj.info fail
+</code>
+练习2 匹配出正确的时间
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$str = &ldquo;
+</span><span class='line'>13:00
+</span><span class='line'>212:36w ww22:48kl
+</span><span class='line'>4:32  这样的时间应该是正确的
+</span><span class='line'>22:00
+</span><span class='line'>23:59
+</span><span class='line'>22:61
+</span><span class='line'>1112:13 非法
+</span><span class='line'>43:33 非法
+</span><span class='line'>12:60
+</span><span class='line'>12:33
+</span><span class='line'>000:34
+</span><span class='line'>00:00
+</span><span class='line'>23:59
+</span><span class='line'>24:59 显然没有这样的时间
+</span><span class='line'>24:00
+</span><span class='line'>30
+</span><span class='line'>&rdquo;;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;$pattern = '/[0-2]{1}[0-3]{1}:[0-5]{1}[0-9]{1}/';
+</span><span class='line'>
+</span><span class='line'>preg_match_all($pattern, $str , $res);
+</span><span class='line'>
+</span><span class='line'>var_dump($res);
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;输出：
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;array(1) {
+</span><span class='line'>[0]=&gt;
+</span><span class='line'>array(10) {
+</span><span class='line'>    [0]=&gt;
+</span><span class='line'>    string(5) "13:00"
+</span><span class='line'>    [1]=&gt;
+</span><span class='line'>    string(5) "12:36"
+</span><span class='line'>    [2]=&gt;
+</span><span class='line'>    string(5) "22:48"
+</span><span class='line'>    [3]=&gt;
+</span><span class='line'>    string(5) "22:00"
+</span><span class='line'>    [4]=&gt;
+</span><span class='line'>    string(5) "23:59"
+</span><span class='line'>    [5]=&gt;
+</span><span class='line'>    string(5) "12:13"
+</span><span class='line'>    [6]=&gt;
+</span><span class='line'>    string(5) "12:33"
+</span><span class='line'>    [7]=&gt;
+</span><span class='line'>    string(5) "00:34"
+</span><span class='line'>    [8]=&gt;
+</span><span class='line'>    string(5) "00:00"
+</span><span class='line'>    [9]=&gt;
+</span><span class='line'>    string(5) "23:59"
+</span><span class='line'>}
+</span><span class='line'>}
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;
+</span><span class='line'>可是我们并没有 "4:32  这样的时间应该是正确的" 这个正确的时间
+</span><span class='line'>是时候用到分支了
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;$pattern = &lsquo;/[0-2]{1}[0-9]{1}:[0-5]{1}[0-9]{1}|[0-9]{1}:[0-5]{1}[0-9]{1}/&rsquo;;</span></code></pre></td></tr></table></div></figure></p>
+
+<p>注意 匹配分枝条件时，将会从左到右地测试每个条件，如果满足了某个分枝的话，就不会去再管其它的条件了。
+举例：
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>\d{5}-\d{4}|\d{5} //匹配类似 23843-3234 或 21234 美国邮编格式&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;美国邮编的规则是5位数字，或者用连字号间隔的9位数字&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;如果你把它改成\d{5}|\d{5}-\d{4}的话，那么就只会匹配5位的邮编(以及9位邮编的前5位)。
+</span><span class='line'>
+</span><span class='line'>####取反义 
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;&lt;a[^&gt;]+&gt;
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>匹配用尖括号括起来的以a开头的字符串。
+</span><span class='line'>匹配以 除 a 标签以外的标签
+</span><span class='line'>&lt;/code&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;h1&gt;匹配以 除 a 标签以外的元素&lt;/h1&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;$str = &lsquo;&lt;a&gt;baidu&lt;/a&gt;
+</span><span class='line'>        &lt;a href="http://baidu.com"&gt;&lt;/a&gt;
+</span><span class='line'>        &lt;a href="baidu.com"&gt;&lt;/a&gt;
+</span><span class='line'>        &lt;span&gt;baidu&lt;/span&gt;
+</span><span class='line'>        &lt;div&gt;hahahaha&lt;/div&gt;
+</span><span class='line'>        &lt;font color="red"&gt;121&lt;/font&gt;&rsquo;;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;$pattern = &lsquo;/&lt;[^a\/].*/i&rsquo;;
+</span><span class='line'>preg_match_all($pattern, $str, $matches);&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;var_dump($matches);
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>输出：
+</span><span class='line'>&lt;/code&gt;
+</span><span class='line'>array(1) {
+</span><span class='line'>    [0]=&gt;
+</span><span class='line'>        array(3) {
+</span><span class='line'>            [0]=&gt;
+</span><span class='line'>            string(19) &ldquo;&lt;span&gt;baidu&lt;/span&gt; &rdquo;
+</span><span class='line'>            [1]=&gt;
+</span><span class='line'>            string(20) &ldquo;&lt;div&gt;hahahaha&lt;/div&gt; &rdquo;
+</span><span class='line'>            [2]=&gt;
+</span><span class='line'>            string(28) &ldquo;&lt;font color="red"&gt;121&lt;/font&gt;&rdquo;
+</span><span class='line'>        }
+</span><span class='line'>}
+</span><span class='line'>[Finished in 0.1s]</span></code></pre></td></tr></table></div></figure></p>
+
+<h4>后向引用</h4>
+
+<p>后向引用用于重复搜索前面某个分组匹配的文本。例如，\1代表分组1匹配的文本，举例：</p>
+
+<p>从字符串中找出重复出现的单词
+<code>``
+$str = 'hello kit kit , let</code>s go to play basketball , go go go';</p>
+
+<p>$pattern = &lsquo;/\b(\w+)\b\s+\1\b/i&rsquo;;</p>
+
+<p>preg_match_all($pattern, $str, $matches);</p>
+
+<p>var_dump($matches);
+<code>
+输出：
+</code>
+array(2) {
+    [0]=>
+        array(2) {
+        [0]=>
+        string(7) &ldquo;kit kit&rdquo;
+        [1]=>
+        string(5) &ldquo;go go&rdquo;
+    }
+    [1]=>
+        array(2) {
+        [0]=>
+        string(3) &ldquo;kit&rdquo;
+        [1]=>
+        string(2) &ldquo;go&rdquo;
+    }
+}
+[Finished in 0.1s]
+```</p>
+
+<h4>常用分组语法</h4>
+
+<pre><code>捕获 (exp) 匹配exp,并捕获文本到自动命名的组里
+捕获 (?&lt;name&gt;exp) 匹配exp,并捕获文本到名称为name的组里，也可以写成(?'name'exp)
+捕获 (?:exp) 匹配exp,不捕获匹配的文本，也不给此分组分配组号
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

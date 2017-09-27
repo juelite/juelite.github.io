@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Mysql-optimize-note - yuuuu.wang`blog</title>
+  <meta name="author" content="wang yu">
+
+  
+  <meta name="description" content="1/ 选用合适的存储引擎 innoDB与myISAM区别
+1. myISAM文件存储为三个文件 .frm（表信息） .MYD（数据） .MYI（索引）而innoDB单文件存储，估计这就是myISAM读性能更好的原因吧
+2. myISAM锁为表锁而innoDB为行锁
+3. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://juelite.github.io/blog/2017/09/26/mysql-optimize-note/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="yuuuu.wang`blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">yuuuu.wang`blog</a></h1>
+  
+    <h2>power by wang yu</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="juelite.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Mysql-optimize-note</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-09-26T15:17:34+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:17 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>1/ 选用合适的存储引擎</h3>
+
+<pre><code>innoDB与myISAM区别
+1. myISAM文件存储为三个文件 .frm（表信息） .MYD（数据） .MYI（索引）而innoDB单文件存储，估计这就是myISAM读性能更好的原因吧
+2. myISAM锁为表锁而innoDB为行锁
+3. myISAM会存储表数据的行数，而innoDB不会，故 select count(*) form table时myISAM会快于innoDB
+4. innoDB支持事务，而myISAM不支持
+5. myISAM支持fulltext索引
+</code></pre>
+
+<h3>2/ 选用合适的字段属性和适当的宽度以及尽量不使用null</h3>
+
+<pre><code>char与varchar区别，char固定长度，varchar变长 char(10) 存 abc 会占10个字节  而同样的VARCHAR(10)则只占用5(前2个字节存长度)个字节的长
+null和""区别，null会占用存储空间 ""不会占存储空间
+</code></pre>
+
+<h3>3/ 使用索引</h3>
+
+<pre><code>索引应建立在那些将用于JOIN,WHERE判断和ORDERBY排序的字段上。尽量不要对数据库中某个含有大量重复的值的字段建立索引
+</code></pre>
+
+<h3>4/ 优化的查询语句</h3>
+
+<pre><code>1. 最好是在相同类型的字段间进行比较的操作
+2. 在建有索引的字段上尽量不要使用函数进行操作
+3. 在搜索字符型字段时，我们有时会使用LIKE关键字和通配符，这种做法虽然简单，但却也是以牺牲系统性能为代价的
+4. 只取所需字段，尽量不用select *
+5. 定期查看慢查询日志
+</code></pre>
+
+<h3>5/ 优化mysql配置</h3>
+
+<pre><code>1. key_buffer_size：表示索引缓存的大小。这个值越大，使用索引进行查询的速度就越快
+2. table_cache：表示同时打开的表的个数。这个值越大，能同时打开的表的个数就越多。这个值不是越大越好，因为同时打开的表过多会影响操作系统的性能
+3. query_cache_size：表示查询缓冲区的大小。使用查询缓存区可以提高查询的速度。这个方式只使用与修改操作少且经常执行相同的查询操作的情况
+4. Query_cache_type：表示查询缓存区的开启状态。0表示关闭，1表示开启
+5. Max_connections：表示数据库的最大连接数。这个连接数不是越大越好，因为连接会浪费内存的资源
+6. Sort_buffer_size：排序缓存区的大小，这个值越大，排序就越快
+7. Innodb_buffer_pool_size：表示InnoDB类型的表和索引的最大缓存。这个值越大，查询的速度就会越快。这个值太大了就会影响操作系统的性能
+</code></pre>
+
+<h3>6/ 对大表进行拆分</h3>
+
+<pre><code>1. 水平拆分 比如10000条记录分一张表
+2. 垂直拆分 比如将新闻信息放在一张表 新闻内容放在另一张表
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">wang yu</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-09-26T15:17:34+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>3:17 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/mysql/'>mysql</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://juelite.github.io/blog/2017/09/26/mysql-optimize-note/" data-via="" data-counturl="http://juelite.github.io/blog/2017/09/26/mysql-optimize-note/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/09/19/laravel-learn-notes/" title="Previous Post: laravel_learn_notes">&laquo; laravel_learn_notes</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/09/26/mysql-optimize-note/">Mysql-optimize-note</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/09/19/laravel-learn-notes/">Laravel_learn_notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/09/06/laravel-5-dot-4-migrate-error-specified-key-was-too-long-error/">Laravel 5.4 Migrate error:Specified Key Was Too Long Error</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/08/29/golang-printf-type/">Golang Printf Type</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/08/21/qianghongbao-jiandanshixian/">微信抢红包实现</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - wang yu -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
