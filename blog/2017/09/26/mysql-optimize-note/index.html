@@ -131,7 +131,7 @@
 2. myISAM锁为表锁而innoDB为行锁
 3. myISAM会存储表数据的行数，而innoDB不会，故 select count(*) form table时myISAM会快于innoDB
 4. innoDB支持事务，而myISAM不支持
-5. myISAM支持fulltext索引
+5. myISAM支持fulltext索引(5.7开始 innodb支持fulltext)
 </code></pre>
 
 <h3>2/ 选用合适的字段属性和适当的宽度以及尽量不使用null</h3>
